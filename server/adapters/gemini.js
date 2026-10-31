@@ -76,9 +76,9 @@ export async function generate({ system, history = [], image = null }) {
       body: JSON.stringify(payload)
     });
 
-    if (response.status === 429) {
-      console.warn(`[Gemini API 429 Rate Limit] Backing off 5s before retry ${retries}/3...`);
-      await sleep(5000);
+    if (response.status === 429 || response.status >= 500) {
+      console.warn(`[Gemini API ${response.status}] Backing off 4s before retry ${retries}/3...`);
+      await sleep(4000);
       continue;
     }
 

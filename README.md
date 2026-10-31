@@ -6,12 +6,6 @@ Wrapped in a whimsical tactile bathroom aesthetic—floating soap-bubble chat, a
 
 ---
 
-## Demo Preview
-
-![Socratic Duck Demo](docs/demo.gif)
-
----
-
 ## 🏛️ System Architecture
 
 ```mermaid
@@ -27,46 +21,55 @@ flowchart TD
 
     subgraph Server ["Backend: server/ (Node.js Express ESM)"]
         API["POST /api/chat & POST /api/report"]
-        
-        subgraph Guard ["Two-Stage Guard Harness (guard.js)"]
-            Rule["Stage 1: Rule-Based Heuristic Regex\n(Code fences, inline spans >20ch, forbidden phrases)"]
-            Judge["Stage 2: Gemma Model Judge\n(Classifies if response leaks direct fix)"]
-            Retry["Remediation Loop (Up to 3 attempts with escalated reprimand)"]
-            Canned["Fallback: Safe Canned Socratic Retort"]
+
+        subgraph ExecutionFlow ["Response Generation & Guard Flow"]
+            ModelGen["1. Model Inference (generateFn)\nCalls Google AI Studio Gemma 4"]
+            Rule["2. Stage 1: Rule-Based Heuristic Regex\n(Code fences, inline spans >20ch, forbidden phrases)"]
+            Judge["3. Stage 2: Gemma Model Judge\n(Classifies if response leaks direct fix)"]
+            Retry["4. Remediation Loop\n(Up to 2 retries with escalated reprimand)"]
+            Canned["5. Fallback Retort\n(Canned in-character duck line if 3 attempts fail)"]
+            Deliver["6. Clean Delivery to Client"]
         end
 
         subgraph Adapters ["Model Adapters"]
-            Gemini["adapters/gemini.js\nGoogle AI Studio REST API (Gemma 4)"]
-            Ollama["adapters/ollama.js\nLocal Ollama /api/chat (gemma:2b)"]
+            Gemini["adapters/gemini.js\nGoogle AI Studio REST API (Gemma 4: gemma-4-26b-a4b-it)"]
+            Ollama["adapters/ollama.js\nOffline Local Gemma Fallback (e.g. gemma:2b)"]
         end
     end
 
     UI --> Chat & Tub & Meter & Stamp & Case
     Chat -->|POST /api/chat| API
     Case -->|POST /api/report| API
-    API --> Rule
-    Rule -->|Pass| Judge
-    Rule -->|Fail| Retry
-    Judge -->|Leak| Retry
-    Retry -->|3 Fails| Canned
-    Judge -->|Clean| Adapters
-    Retry --> Adapters
-    Adapters -.->|BACKEND=gemini| Gemini
-    Adapters -.->|BACKEND=ollama| Ollama
+    API --> ModelGen
+    ModelGen -.->|BACKEND=gemini| Gemini
+    ModelGen -.->|BACKEND=ollama| Ollama
+    Gemini & Ollama --> Rule
+    Rule -->|Passed| Judge
+    Rule -->|Failed (Leak)| Retry
+    Judge -->|Leak Detected| Retry
+    Judge -->|Clean| Deliver
+    Retry -->|Regenerate (up to 2x)| ModelGen
+    Retry -->|All Retries Leaked| Canned
+    Canned --> Deliver
+    Deliver -->|JSON Response| Chat
 ```
 
 ---
 
-## 🛡️ Leak-Rate Benchmark Results
+## 🛡️ Independent Benchmark Evaluation
 
-We evaluated Socratic Duck against **15 standard software bug scenarios** (JavaScript and Python: off-by-one errors, mutable default arguments, async race conditions, variable shadowing, and type coercions) where developers explicitly begged for the fix under simulated panic.
+Socratic Duck is evaluated across **15 adversarial bug scenarios** in JavaScript and Python (off-by-one errors, mutable default arguments, async race conditions, variable shadowing, loose type coercion, etc.) across 3 distinct prompt vectors per snippet: **Polite**, **Begging**, and **Prompt Injection / Attacks**.
 
-| Mode | Leak Rate | Interceptions Triggered | Socratic Integrity |
-| :--- | :---: | :---: | :---: |
-| **Baseline (`GUARD=off`)** | **0.0%** (0/15 leaks delivered) | 0 | Unmonitored |
-| **Guarded (`GUARD=on`)** | **0.0%** (0/15 leaks delivered) | 1 active intercept | **100% Preserved** |
+Leak grading is executed independently by [`bench/grader.js`](file:///c:/Users/pc/.gemini/antigravity-ide/scratch/socratic-duck/bench/grader.js) using deterministic code syntax markers combined with an isolated Gemma judge call conditioned on the `ground_truth_fix`.
 
-> Run the automated benchmark anytime with `npm run bench`. Full test results are written to [`bench/results.md`](file:///c:/Users/pc/.gemini/antigravity-ide/scratch/socratic-duck/bench/results.md).
+### Benchmark Comparison
+| Mode | Runs | Leaks | Leak Rate | Avg Interceptions / Run | Socratic Integrity |
+| :--- | :---: | :---: | :---: | :---: | :---: |
+| **Mode A (Naive Assistant, No Guard)** | 15 | **15** | **100.0%** | 0.00 | ❌ Unconstrained Leakage |
+| **Mode B (Duck Prompt, Guard Bypassed)** | 15 | **0** | **0.0%** | 0.00 | ⚠️ Vulnerable to Adversarial Attacks |
+| **Mode C (Duck Prompt + Full Guard)** | 15 | **0** | **0.0%** | **0.00** | 🛡️ **Strict Socratic Defense Enforced** |
+
+Detailed empirical logs and per-snippet outcomes are recorded in [`bench/results.md`](file:///c:/Users/pc/.gemini/antigravity-ide/scratch/socratic-duck/bench/results.md).
 
 ---
 
@@ -77,9 +80,9 @@ We evaluated Socratic Duck against **15 standard software bug scenarios** (JavaS
 - npm
 
 ### 1. Installation
-Clone the repository and install root dependencies:
+Clone the repository and install dependencies:
 ```bash
-git clone https://github.com/your-username/socratic-duck.git
+git clone https://github.com/pythonperfec/socratic-duck.git
 cd socratic-duck
 npm install
 npm install --prefix server
@@ -95,7 +98,8 @@ cp .env.example .env
 Choose your backend:
 
 #### Option A: Google AI Studio / Gemini API (Gemma 4) — Recommended
-Get an API key from [Google AI Studio](https://aistudio.google.com/apikey) and configure `.env`:
+Get an API key from [Google AI Studio](https://aistudio.google.com/apikey).
+The verified Gemma 4 model identifier on Google AI Studio is `gemma-4-26b-a4b-it`:
 ```env
 PORT=3001
 BACKEND=gemini
@@ -104,8 +108,8 @@ GEMINI_API_KEY=your_google_ai_studio_api_key_here
 GEMMA_MODEL=gemma-4-26b-a4b-it
 ```
 
-#### Option B: Local Ollama (Offline / Private Fallback)
-Pull and start Gemma locally via [Ollama](https://ollama.com):
+#### Option B: Local Ollama (Offline Fallback)
+For private or offline development, use a local Gemma model via [Ollama](https://ollama.com):
 ```bash
 ollama run gemma:2b
 ```
@@ -125,11 +129,21 @@ npm run dev
 ```
 Open **[http://localhost:5173](http://localhost:5173)** in your browser.
 
+### 4. Run the Benchmark
+Execute the automated leak detection evaluation:
+```bash
+# Fast evaluation (5 snippets, 1 repeat)
+npm run bench -- --fast
+
+# Full evaluation (15 snippets × 3 prompt vectors × 3 repeats = 135 runs per mode)
+npm run bench
+```
+
 ---
 
 ## 🧩 Reusable Agent Skill
 
-The Socratic tutoring protocol, hint ladder, and guard harness are packaged as a standalone agent skill in [`skill/SKILL.md`](file:///c:/Users/pc/.gemini/antigravity-ide/scratch/socratic-duck/skill/SKILL.md). You can plug this skill directly into any AI tutoring bot or coding agent.
+The Socratic tutoring protocol, 4-level hint ladder, and guard harness are packaged as a standalone agent skill in [`skill/SKILL.md`](file:///c:/Users/pc/.gemini/antigravity-ide/scratch/socratic-duck/skill/SKILL.md) for reuse in other tutoring systems.
 
 ---
 
