@@ -1554,6 +1554,1011 @@ code, pre {
 }
 
 /* ========================================================
+   MODE SWITCHER - NEUTRAL SEGMENTED CONTROL
+   ("Duck" | "Séance")
+   ======================================================== */
+.mode-switcher-segmented {
+  display: inline-flex;
+  align-items: center;
+  background-color: rgba(31, 45, 45, 0.08);
+  border: 1.5px solid rgba(46, 156, 154, 0.3);
+  border-radius: var(--radius-full);
+  padding: 3px;
+  gap: 2px;
+}
+
+[data-mode="seance"] .mode-switcher-segmented {
+  background-color: #211915;
+  border-color: #3B3631;
+}
+
+.mode-segment-btn {
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-full);
+  padding: 6px 14px;
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-ink-muted);
+  cursor: pointer;
+  transition: all 0.18s ease;
+  line-height: 1.2;
+}
+
+.mode-segment-btn:hover {
+  color: var(--color-ink);
+}
+
+.mode-segment-btn.active {
+  background-color: var(--color-porcelain-white);
+  color: var(--color-ink);
+  box-shadow: 0 1px 4px rgba(31, 45, 45, 0.15);
+}
+
+[data-mode="seance"] .mode-segment-btn {
+  color: #B5A895;
+}
+
+[data-mode="seance"] .mode-segment-btn:hover {
+  color: #EFE6D2;
+}
+
+[data-mode="seance"] .mode-segment-btn.active {
+  background-color: #8E1B1B;
+  color: #EFE6D2;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+}
+
+/* ========================================================
+   SÉANCE MODE - GHOST IN THE MACHINE CHALLENGE
+   Palette: soot #17110E, candle amber #E8A33D, wax red #8E1B1B,
+            bone #EFE6D2, marigold #F28C0F, fog #3B3631
+   Fonts: "IM Fell English" headings, "IBM Plex Mono" code
+   Strictly NO purple/blue gradients, no glass cards, no sparkle icons
+   ======================================================== */
+
+body[data-mode="seance"] {
+  background-color: #17110E;
+  color: #EFE6D2;
+}
+
+[data-mode="seance"] h1,
+[data-mode="seance"] h2,
+[data-mode="seance"] h3,
+[data-mode="seance"] h4,
+[data-mode="seance"] .brand-title,
+[data-mode="seance"] .ofrenda-title,
+[data-mode="seance"] .seal-headline {
+  font-family: 'IM Fell English', Georgia, serif;
+  letter-spacing: 0.03em;
+}
+
+[data-mode="seance"] code,
+[data-mode="seance"] pre,
+[data-mode="seance"] .meter-numeric-seance,
+[data-mode="seance"] .spirit-chip,
+[data-mode="seance"] .spell-tier-badge,
+[data-mode="seance"] .parchment-footer,
+[data-mode="seance"] .flashcard-ribbon {
+  font-family: 'IBM Plex Mono', monospace;
+}
+
+/* Header in Séance Mode */
+[data-mode="seance"] .app-header {
+  background-color: #211915;
+  border: 3px solid #8E1B1B;
+  box-shadow: 0 4px 0 #5E1010, 0 8px 24px rgba(0, 0, 0, 0.5);
+}
+
+[data-mode="seance"] .brand-title {
+  color: #EFE6D2;
+}
+
+[data-mode="seance"] .brand-tagline {
+  color: #E8A33D;
+}
+
+[data-mode="seance"] .solved-it-btn {
+  background: #8E1B1B;
+  color: #EFE6D2;
+  border: 2px solid #E8A33D;
+  box-shadow: 0 3px 0 #5E1010;
+  font-family: 'IM Fell English', serif;
+}
+
+[data-mode="seance"] .solved-it-btn:hover:not(:disabled) {
+  background: #AA2222;
+  box-shadow: 0 4px 0 #5E1010;
+}
+
+[data-mode="seance"] .dev-stamp-btn,
+[data-mode="seance"] .dev-drain-btn {
+  background-color: #2C211B;
+  border: 2px solid #3B3631;
+  color: #EFE6D2;
+  font-family: 'IM Fell English', serif;
+}
+
+[data-mode="seance"] .dev-stamp-btn:hover,
+[data-mode="seance"] .dev-drain-btn:hover {
+  background-color: #3B3631;
+}
+
+/* Silenced Spirits Badge */
+.seance-blocked-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  background-color: #2C211B;
+  border: 2px dashed #8E1B1B;
+  border-radius: var(--radius-sm);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #E8A33D;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.seance-blocked-badge:hover {
+  background-color: #382B24;
+  transform: scale(1.03);
+}
+
+/* Left Scene Column: Dark Candlelit Study with Drifting Fog */
+.seance-study-container {
+  position: relative;
+  width: 100%;
+  height: 420px;
+  background-color: #1A130F;
+  border: 3px solid #3B3631;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.8), 0 4px 16px rgba(0, 0, 0, 0.4);
+}
+
+/* Drifting Fog Keyframe Layers */
+.fog-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-repeat: repeat-x;
+  background-size: 600px 100%;
+}
+
+.fog-back {
+  background-image: radial-gradient(ellipse at 30% 60%, rgba(59, 54, 49, 0.35) 0%, transparent 70%);
+  animation: fogDrift1 28s ease-in-out infinite alternate;
+  z-index: 1;
+}
+
+.fog-mid {
+  background-image: radial-gradient(ellipse at 70% 40%, rgba(59, 54, 49, 0.25) 0%, transparent 65%);
+  animation: fogDrift2 20s ease-in-out infinite alternate;
+  z-index: 2;
+}
+
+.fog-front {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 90px;
+  background: linear-gradient(to top, rgba(23, 17, 14, 0.75) 0%, transparent 100%);
+  z-index: 4;
+}
+
+@keyframes fogDrift1 {
+  0% { transform: translateX(-40px); }
+  100% { transform: translateX(40px); }
+}
+
+@keyframes fogDrift2 {
+  0% { transform: translateX(50px); }
+  100% { transform: translateX(-50px); }
+}
+
+.study-wood-frame {
+  position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 3;
+}
+
+.study-header-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 10px 18px;
+  font-family: 'IM Fell English', serif;
+  border-bottom: 1px solid rgba(232, 163, 61, 0.25);
+}
+
+.study-occult-symbol {
+  color: #E8A33D;
+  font-size: 0.9rem;
+}
+
+.study-title-label {
+  color: #EFE6D2;
+  font-size: 0.95rem;
+  letter-spacing: 0.12em;
+}
+
+.spell-tier-badge {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.75rem;
+  background: #8E1B1B;
+  color: #EFE6D2;
+  padding: 2px 8px;
+  border-radius: 4px;
+  border: 1px solid #E8A33D;
+}
+
+/* Ambient Candle Flames */
+.ambient-candle {
+  position: absolute;
+  top: 100px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 3;
+}
+
+.candle-left {
+  left: 32px;
+}
+
+.candle-right {
+  right: 32px;
+}
+
+.candle-stick {
+  width: 14px;
+  height: 70px;
+  background: #EFE6D2;
+  border: 1px solid #3B3631;
+  border-radius: 2px 2px 0 0;
+  box-shadow: inset -2px 0 3px rgba(0, 0, 0, 0.2);
+}
+
+.candle-wick {
+  width: 2px;
+  height: 6px;
+  background: #17110E;
+}
+
+.candle-flame {
+  width: 10px;
+  height: 16px;
+  background: #E8A33D;
+  border-radius: 50% 50% 35% 35%;
+  box-shadow: 0 0 10px #F28C0F, 0 0 18px rgba(232, 163, 61, 0.6);
+  animation: candleFlameFlicker 1.8s infinite alternate ease-in-out;
+}
+
+.candle-halo {
+  position: absolute;
+  top: -15px;
+  width: 40px;
+  height: 40px;
+  background: radial-gradient(circle, rgba(232, 163, 61, 0.3) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+@keyframes candleFlameFlicker {
+  0% { transform: scale(1) rotate(-1deg); opacity: 0.95; }
+  25% { transform: scale(0.92, 1.08) rotate(1deg); opacity: 1; }
+  50% { transform: scale(1.05, 0.95) rotate(-2deg); opacity: 0.88; }
+  75% { transform: scale(0.95, 1.03) rotate(1.5deg); opacity: 0.98; }
+  100% { transform: scale(1.02, 0.98) rotate(0deg); opacity: 0.92; }
+}
+
+/* Altar & Magic Circle with Translucent Ghost Duck */
+.seance-altar {
+  position: relative;
+  width: 220px;
+  height: 220px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: auto;
+}
+
+.altar-circle {
+  position: absolute;
+  width: 200px;
+  height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.magic-circle-svg {
+  width: 100%;
+  height: 100%;
+  animation: magicCircleRotate 50s linear infinite;
+}
+
+@keyframes magicCircleRotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Translucent Ghost Duck Component */
+.ghost-duck-container {
+  cursor: pointer;
+  position: relative;
+  z-index: 5;
+  outline: none;
+  animation: ghostFloating 3.6s ease-in-out infinite;
+  transition: transform 0.2s ease;
+}
+
+.ghost-duck-container:hover {
+  transform: scale(1.05);
+}
+
+.ghost-duck-svg {
+  width: 170px;
+  height: 170px;
+  filter: drop-shadow(0 0 16px rgba(232, 163, 61, 0.4));
+}
+
+@keyframes ghostFloating {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-9px) rotate(-1.5deg); }
+}
+
+.ghost-draining {
+  animation: ghostDissolve 2.8s ease-in-out forwards !important;
+}
+
+@keyframes ghostDissolve {
+  0% { opacity: 1; transform: scale(1) translateY(0); }
+  40% { opacity: 0.25; transform: scale(0.85) translateY(10px) rotate(6deg); filter: blur(3px); }
+  70% { opacity: 0.35; transform: scale(0.9) translateY(5px); filter: blur(2px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); filter: blur(0); }
+}
+
+/* Spirit Conjure Bar (COBOL, Fortran, Pascal, BASIC, ALGOL) */
+.spirit-conjure-bar {
+  position: relative;
+  z-index: 6;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 14px;
+  background: rgba(23, 17, 14, 0.94);
+  border-top: 1px solid #3B3631;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.spirit-bar-label {
+  font-family: 'IM Fell English', serif;
+  font-size: 0.85rem;
+  color: #E8A33D;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.spirit-selector-group {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+
+.spirit-chip {
+  background: #251D18;
+  border: 1px solid #3B3631;
+  border-radius: 4px;
+  padding: 4px 9px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.75rem;
+  color: #EFE6D2;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.spirit-chip:hover {
+  border-color: #E8A33D;
+  background: #332720;
+}
+
+.spirit-chip.active {
+  background: #8E1B1B;
+  border-color: #E8A33D;
+  color: #FFFFFF;
+  font-weight: 600;
+  box-shadow: 0 0 10px rgba(232, 163, 61, 0.35);
+}
+
+.spirit-sigil {
+  color: #E8A33D;
+  font-size: 0.65rem;
+}
+
+/* Candle Patience Meter */
+.candle-meter-container {
+  background-color: #1F1814;
+  border: 2px solid #3B3631;
+  border-radius: var(--radius-sm);
+  padding: 12px 16px;
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.candle-meter-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.meter-label-seance {
+  font-family: 'IM Fell English', serif;
+  font-size: 0.95rem;
+  color: #E8A33D;
+}
+
+.meter-numeric-seance {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.85rem;
+  color: #EFE6D2;
+}
+
+.candle-meter-track {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 6px 2px;
+}
+
+.altar-candle-holder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 55px;
+  height: 95px;
+  margin: 0 auto;
+}
+
+.candle-pillar-shaft {
+  position: relative;
+  width: 28px;
+  height: 75px;
+  background: rgba(0, 0, 0, 0.45);
+  border: 1px dashed #3B3631;
+  border-radius: 4px 4px 0 0;
+  display: flex;
+  flex-direction: column-reverse;
+  overflow: visible;
+}
+
+.candle-wax-fill {
+  position: relative;
+  width: 100%;
+  background: #EFE6D2;
+  border: 1px solid #E8A33D;
+  border-radius: 3px 3px 0 0;
+  transition: height 0.5s ease;
+  box-shadow: inset 0 -4px 6px rgba(0, 0, 0, 0.2);
+}
+
+.candle-wick-flame {
+  position: absolute;
+  top: -14px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.wick-stem {
+  width: 2px;
+  height: 5px;
+  background: #17110E;
+}
+
+.flame-core {
+  width: 8px;
+  height: 12px;
+  background: #E8A33D;
+  border-radius: 50% 50% 35% 35%;
+  box-shadow: 0 0 10px #F28C0F, 0 0 18px #E8A33D;
+  animation: candleFlameFlicker 1.8s infinite alternate ease-in-out;
+}
+
+.flame-dead .flame-core {
+  display: none;
+}
+
+.flame-gutter .flame-core {
+  width: 5px;
+  height: 7px;
+  opacity: 0.6;
+  animation-duration: 0.6s;
+}
+
+.flame-strong .flame-core {
+  width: 10px;
+  height: 16px;
+  box-shadow: 0 0 16px #F28C0F, 0 0 25px #E8A33D;
+}
+
+.candle-holder-base {
+  width: 50px;
+  height: 10px;
+  background: #3B3631;
+  border: 1px solid #17110E;
+  border-radius: 0 0 6px 6px;
+}
+
+.candle-meter-status {
+  font-family: 'IM Fell English', serif;
+  font-size: 0.85rem;
+  color: #E8A33D;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.seance-delta-indicator {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.seance-delta-indicator.gain {
+  color: #E8A33D;
+  background: rgba(232, 163, 61, 0.15);
+  border: 1px solid #E8A33D;
+}
+
+.seance-delta-indicator.loss {
+  color: #8E1B1B;
+  background: rgba(142, 27, 27, 0.15);
+  border: 1px solid #8E1B1B;
+}
+
+/* Wax-Seal Stamp Overlay ("THE SPIRIT ALMOST SPOKE") */
+.seance-stamp-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(23, 17, 14, 0.88);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  animation: stampOverlayFade 0.25s ease-out;
+}
+
+.seance-wax-seal {
+  position: relative;
+  width: 440px;
+  max-width: 90vw;
+  background: #8E1B1B;
+  border: 4px solid #E8A33D;
+  border-radius: 50%;
+  aspect-ratio: 1 / 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 30px;
+  box-shadow: 0 0 0 8px rgba(142, 27, 27, 0.45), 0 12px 40px rgba(0, 0, 0, 0.75);
+  animation: stampThud 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.wax-center-die {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 2px dashed rgba(239, 230, 210, 0.5);
+  border-radius: 50%;
+  width: 100%;
+  height: 100%;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.wax-runic-ring {
+  font-family: 'IM Fell English', serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.2em;
+  color: #E8A33D;
+  opacity: 0.8;
+}
+
+.seal-headline {
+  font-family: 'IM Fell English', serif;
+  font-size: 1.55rem;
+  color: #EFE6D2;
+  letter-spacing: 0.06em;
+  margin: 8px 0 4px;
+  text-shadow: 1px 2px 3px rgba(0, 0, 0, 0.7);
+}
+
+.seal-subline {
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  font-size: 0.88rem;
+  color: #E8A33D;
+  margin-bottom: 8px;
+}
+
+.wax-sigil-icon {
+  font-size: 1.6rem;
+  margin-top: 4px;
+}
+
+.seal-dismiss-btn {
+  margin-top: 10px;
+  background: #17110E;
+  color: #EFE6D2;
+  border: 1px solid #E8A33D;
+  border-radius: var(--radius-sm);
+  padding: 6px 14px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.seal-dismiss-btn:hover {
+  background: #251D18;
+}
+
+/* Ghostly Parchment Chat Bubbles */
+.seance-parchment-bubble {
+  position: relative;
+  padding: 14px 18px;
+  border-radius: 8px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  max-width: 85%;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+}
+
+.spirit-bubble {
+  background-color: #211915;
+  color: #EFE6D2;
+  border: 2px solid #8E1B1B;
+  border-left: 4px solid #E8A33D;
+}
+
+.mortal-bubble {
+  background-color: #2C211B;
+  color: #EFE6D2;
+  border: 2px solid #3B3631;
+  border-right: 4px solid #E8A33D;
+}
+
+.parchment-seal-corner {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  width: 12px;
+  height: 12px;
+  background: #8E1B1B;
+  border: 1px solid #E8A33D;
+  border-radius: 50%;
+}
+
+.parchment-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 8px;
+  padding-top: 6px;
+  border-top: 1px dashed rgba(232, 163, 61, 0.2);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.75rem;
+  color: #E8A33D;
+}
+
+.spirit-patience-tag.gain {
+  color: #E8A33D;
+  font-weight: 600;
+}
+
+.spirit-patience-tag.loss {
+  color: #F28C0F;
+  font-weight: 600;
+}
+
+/* Right Dialogue Column in Séance Mode */
+[data-mode="seance"] .dialogue-column {
+  background-color: #1F1814;
+  border: 3px solid #3B3631;
+  box-shadow: 0 4px 0 #150F0C;
+}
+
+[data-mode="seance"] .chat-viewport {
+  background-color: #17110E;
+}
+
+[data-mode="seance"] .chat-composer {
+  background-color: #211915;
+  border-top: 2px solid #3B3631;
+}
+
+[data-mode="seance"] .composer-textarea {
+  background-color: #17110E;
+  color: #EFE6D2;
+  border: 2px solid #3B3631;
+}
+
+[data-mode="seance"] .composer-textarea:focus {
+  border-color: #E8A33D;
+  box-shadow: 0 0 0 2px rgba(232, 163, 61, 0.25);
+}
+
+[data-mode="seance"] .composer-send-btn {
+  background: #8E1B1B;
+  color: #EFE6D2;
+  border: 2px solid #E8A33D;
+  box-shadow: 0 3px 0 #5E1010;
+  font-family: 'IM Fell English', serif;
+}
+
+[data-mode="seance"] .composer-send-btn:hover:not(:disabled) {
+  background: #AA2222;
+}
+
+[data-mode="seance"] .composer-upload-btn {
+  background-color: #2C211B;
+  border-color: #3B3631;
+  color: #E8A33D;
+}
+
+[data-mode="seance"] .seance-typing-bubble {
+  background-color: #211915 !important;
+  border: 2px solid #8E1B1B !important;
+}
+
+[data-mode="seance"] .typing-hint {
+  color: #E8A33D;
+  font-family: 'IM Fell English', serif;
+}
+
+/* Mood Sampler in Séance Mode */
+[data-mode="seance"] .mood-sampler {
+  background: #211915;
+  border-color: #3B3631;
+}
+
+[data-mode="seance"] .sampler-label {
+  color: #E8A33D;
+  font-family: 'IM Fell English', serif;
+}
+
+[data-mode="seance"] .mood-pill {
+  background: #2C211B;
+  border-color: #3B3631;
+  color: #EFE6D2;
+  font-family: 'IM Fell English', serif;
+}
+
+[data-mode="seance"] .mood-pill.active {
+  background: #8E1B1B;
+  border-color: #E8A33D;
+  color: #FFFFFF;
+}
+
+/* Ofrenda Card Post-Mortem Modal */
+.ofrenda-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(14, 10, 8, 0.88);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.ofrenda-card-container {
+  background-color: #17110E;
+  border: 3px solid #F28C0F;
+  border-radius: 12px;
+  max-width: 680px;
+  width: 100%;
+  box-shadow: 0 0 0 4px #8E1B1B, 0 16px 48px rgba(0, 0, 0, 0.75);
+  color: #EFE6D2;
+  position: relative;
+}
+
+.marigold-border-frame {
+  position: relative;
+  padding: 28px;
+  border: 1px dashed #E8A33D;
+  margin: 6px;
+  border-radius: 8px;
+}
+
+.marigold-corner {
+  position: absolute;
+  font-size: 1.3rem;
+  filter: drop-shadow(0 0 4px rgba(242, 140, 15, 0.6));
+}
+
+.marigold-corner.top-left {
+  top: -12px;
+  left: -12px;
+}
+
+.marigold-corner.top-right {
+  top: -12px;
+  right: -12px;
+}
+
+.marigold-corner.bottom-left {
+  bottom: -12px;
+  left: -12px;
+}
+
+.marigold-corner.bottom-right {
+  bottom: -12px;
+  right: -12px;
+}
+
+.ofrenda-header {
+  text-align: center;
+  border-bottom: 2px solid #8E1B1B;
+  padding-bottom: 14px;
+  margin-bottom: 18px;
+}
+
+.ofrenda-title {
+  font-family: 'IM Fell English', serif;
+  font-size: 1.7rem;
+  color: #F28C0F;
+  letter-spacing: 0.05em;
+  margin: 6px 0 2px;
+}
+
+.ofrenda-subtitle {
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  font-size: 0.95rem;
+  color: #E8A33D;
+}
+
+.ofrenda-section {
+  margin-bottom: 16px;
+}
+
+.section-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'IM Fell English', serif;
+  font-size: 1.1rem;
+  color: #E8A33D;
+  margin-bottom: 6px;
+}
+
+.ofrenda-text {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: #EFE6D2;
+  background: #211915;
+  padding: 12px 16px;
+  border-radius: 6px;
+  border-left: 3px solid #8E1B1B;
+}
+
+.ofrenda-flashcard {
+  margin-top: 14px;
+  background: #211915;
+  border: 2px solid #E8A33D;
+  border-radius: 6px;
+  padding: 14px;
+}
+
+.flashcard-ribbon {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  color: #F28C0F;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.flashcard-q, .flashcard-a {
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: #EFE6D2;
+  margin-top: 4px;
+}
+
+.ofrenda-farewell {
+  margin-top: 16px;
+  padding: 14px;
+  background: #251B15;
+  border: 1px dashed #F28C0F;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  color: #E8A33D;
+  text-align: center;
+}
+
+.farewell-message {
+  flex: 1;
+}
+
+.ofrenda-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 20px;
+  border-top: 1px solid #3B3631;
+  padding-top: 16px;
+}
+
+.ofrenda-print-btn {
+  background: #8E1B1B;
+  color: #EFE6D2;
+  border: 2px solid #E8A33D;
+  border-radius: var(--radius-sm);
+  padding: 8px 18px;
+  font-family: 'IM Fell English', serif;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.ofrenda-print-btn:hover {
+  background: #AA2222;
+  transform: translateY(-1px);
+}
+
+.ofrenda-close-btn {
+  background: #251B15;
+  color: #EFE6D2;
+  border: 1px solid #3B3631;
+  border-radius: var(--radius-sm);
+  padding: 8px 16px;
+  font-family: 'IM Fell English', serif;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+
+.ofrenda-close-btn:hover {
+  background: #332720;
+}
+
+
+/* ========================================================
    RESPONSIVE LAYOUTS
    ======================================================== */
 @media (max-width: 980px) {

@@ -9,7 +9,12 @@ import React, { useEffect, useRef } from 'react';
  * - Animated soap-suds typing indicator when the duck is deliberating
  * - Smooth auto-scrolling
  */
-export default function Chat({ messages = [], isDuckTyping = false }) {
+export default function Chat({
+  messages = [],
+  isDuckTyping = false,
+  ChatBubbleComponent = null,
+  modeId = 'duck'
+}) {
   const bottomRef = useRef(null);
 
   // Auto-scroll on new messages or typing state
@@ -17,7 +22,18 @@ export default function Chat({ messages = [], isDuckTyping = false }) {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isDuckTyping]);
 
+  const isSeance = modeId === 'seance';
+
   const renderMoodEmoji = (mood) => {
+    if (isSeance) {
+      switch (mood) {
+        case 'delighted': return '🕊️';
+        case 'squint': return '🔮';
+        case 'grumpy': return '⚡';
+        default: return '👁️';
+      }
+    }
+
     switch (mood) {
       case 'delighted': return '✨🦆';
       case 'squint': return '🧐🦆';
@@ -27,7 +43,7 @@ export default function Chat({ messages = [], isDuckTyping = false }) {
   };
 
   return (
-    <div className="chat-viewport" aria-label="Conversation with Socratic Duck">
+    <div className="chat-viewport" aria-label="Conversation dialogue thread">
       <div className="chat-messages-list">
         {messages.map((msg) => {
           const isDuck = msg.role === 'duck';
@@ -37,55 +53,55 @@ export default function Chat({ messages = [], isDuckTyping = false }) {
               className={`message-row ${isDuck ? 'duck-row' : 'user-row'}`}
             >
               {isDuck && (
-                <div className="duck-avatar-bubble" title={`Duck mood: ${msg.mood || 'calm'}`}>
+                <div
+                  className="duck-avatar-bubble"
+                  title={`${isSeance ? 'Spectral state' : 'Duck mood'}: ${msg.mood || 'calm'}`}
+                >
                   <span className="avatar-duck">{renderMoodEmoji(msg.mood)}</span>
                 </div>
               )}
 
-              <div className={`soap-bubble ${isDuck ? 'duck-bubble' : 'user-bubble'}`}>
-                {/* Iridescent bubble highlight sheen */}
-                <div className="bubble-sheen"></div>
-
-                {/* Attached screenshot preview if present */}
-                {msg.image && (
-                  <div className="bubble-attachment">
-                    <img src={msg.image} alt="Code screenshot" className="attached-img" />
-                  </div>
-                )}
-
-                {/* Message text */}
-                <div className="bubble-text">
-                  {msg.text}
-                </div>
-
-                {/* Bubble footer / timestamp */}
-                <div className="bubble-footer">
-                  {msg.patienceDelta !== undefined && isDuck && (
-                    <span className={`patience-tag ${msg.patienceDelta >= 0 ? 'gain' : 'loss'}`}>
-                      {msg.patienceDelta > 0 ? `+${msg.patienceDelta} Patience` : `${msg.patienceDelta} Patience`}
-                    </span>
+              {ChatBubbleComponent ? (
+                <ChatBubbleComponent msg={msg} isDuck={isDuck} />
+              ) : (
+                <div className={`soap-bubble ${isDuck ? 'duck-bubble' : 'user-bubble'}`}>
+                  <div className="bubble-sheen"></div>
+                  {msg.image && (
+                    <div className="bubble-attachment">
+                      <img src={msg.image} alt="Code screenshot" className="attached-img" />
+                    </div>
                   )}
-                  <span className="bubble-timestamp">{msg.timestamp || 'Just now'}</span>
+                  <div className="bubble-text">{msg.text}</div>
+                  <div className="bubble-footer">
+                    {msg.patienceDelta !== undefined && isDuck && (
+                      <span className={`patience-tag ${msg.patienceDelta >= 0 ? 'gain' : 'loss'}`}>
+                        {msg.patienceDelta > 0 ? `+${msg.patienceDelta} Patience` : `${msg.patienceDelta} Patience`}
+                      </span>
+                    )}
+                    <span className="bubble-timestamp">{msg.timestamp || 'Just now'}</span>
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           );
         })}
 
-        {/* Duck Typing Bubble Indicator */}
+        {/* Typing Bubble Indicator */}
         {isDuckTyping && (
           <div className="message-row duck-row typing-row">
             <div className="duck-avatar-bubble">
-              <span className="avatar-duck">🦆</span>
+              <span className="avatar-duck">{isSeance ? '🕯️' : '🦆'}</span>
             </div>
-            <div className="soap-bubble duck-bubble typing-bubble">
+            <div className={`soap-bubble duck-bubble typing-bubble ${isSeance ? 'seance-typing-bubble' : ''}`}>
               <div className="bubble-sheen"></div>
               <div className="typing-suds">
                 <span className="typing-dot d1"></span>
                 <span className="typing-dot d2"></span>
                 <span className="typing-dot d3"></span>
               </div>
-              <span className="typing-hint">Duck is inspecting your logic...</span>
+              <span className="typing-hint">
+                {isSeance ? 'Spirit is communing with your logic...' : 'Duck is inspecting your logic...'}
+              </span>
             </div>
           </div>
         )}

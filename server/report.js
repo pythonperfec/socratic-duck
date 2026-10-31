@@ -48,7 +48,8 @@ export async function generateReport({ history = [], generateFn }) {
         flashcard: {
           q: String(parsed.flashcard.q || 'What principle applies here?'),
           a: String(parsed.flashcard.a || 'Understand state dependencies.')
-        }
+        },
+        farewell: parsed.farewell || (spirit ? `The spirit of ${spirit} recedes into the ether. May your code run without error.` : undefined)
       };
     }
   } catch (e) {

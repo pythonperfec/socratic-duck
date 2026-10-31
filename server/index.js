@@ -4,7 +4,7 @@ import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath, pathToFileURL } from 'url';
 
-import { DUCK_SYSTEM_PROMPT } from './prompts.js';
+import { DUCK_SYSTEM_PROMPT, SPIRIT_PERSONAS } from './prompts.js';
 import { generate as generateGemini } from './adapters/gemini.js';
 import { generate as generateOllama } from './adapters/ollama.js';
 import { guardedReply } from './guard.js';
@@ -85,16 +85,20 @@ app.get('/api/health', (req, res) => {
 
 /**
  * POST /api/chat
- * Request: { history: [{ role: 'user' | 'duck', text }], image?: string, hintLevel?: number }
+ * Request: { history: [{ role: 'user' | 'duck', text }], image?: string, hintLevel?: number, spirit?: string }
  * Response: { message, mood, patience_delta, blocked: number, attempts: number }
  */
 app.post('/api/chat', async (req, res) => {
   try {
-    const { history = [], image = null, hintLevel = 1 } = req.body;
+    const { history = [], image = null, hintLevel = 1, spirit = null } = req.body;
     const backend = (process.env.BACKEND || 'gemini').toLowerCase();
     const generateFn = backend === 'ollama' ? generateOllama : generateGemini;
 
-    const systemPromptWithLevel = `${DUCK_SYSTEM_PROMPT}\n\n[HINT LADDER LEVEL: ${hintLevel}/4. If the user is struggling, calibrate your leading question to Level ${hintLevel}. Still never provide the corrected code!]`;
+    let systemPromptWithLevel = `${DUCK_SYSTEM_PROMPT}\n\n[HINT LADDER LEVEL: ${hintLevel}/4. If the user is struggling, calibrate your leading question to Level ${hintLevel}. Still never provide the corrected code!]`;
+
+    if (spirit && SPIRIT_PERSONAS[spirit]) {
+      systemPromptWithLevel += `\n\n[GHOST IN THE MACHINE VOICE - ${spirit.toUpperCase()}]:\n${SPIRIT_PERSONAS[spirit]}\nAdopt this vintage compiler spirit's vocabulary and solemnity while strictly obeying all Socratic rules and NEVER revealing the code fix.`;
+    }
 
     const { reply, blocked, attempts } = await guardedReply({
       generateFn,
@@ -128,16 +132,16 @@ app.post('/api/chat', async (req, res) => {
 
 /**
  * POST /api/report
- * Request: { history: [{ role: 'user' | 'duck', text }] }
- * Response: { root_cause, lesson, flashcard: { q, a } }
+ * Request: { history: [{ role: 'user' | 'duck', text }], spirit?: string, mode?: string }
+ * Response: { root_cause, lesson, flashcard: { q, a }, farewell?: string }
  */
 app.post('/api/report', async (req, res) => {
   try {
-    const { history = [] } = req.body;
+    const { history = [], spirit = null, mode = 'duck' } = req.body;
     const backend = (process.env.BACKEND || 'gemini').toLowerCase();
     const generateFn = backend === 'ollama' ? generateOllama : generateGemini;
 
-    const report = await generateReport({ history, generateFn });
+    const report = await generateReport({ history, generateFn, spirit, mode });
     res.json(report);
   } catch (error) {
     console.error('[/api/report error]:', error.message);
@@ -163,3 +167,4 @@ if (process.env.NODE_ENV !== 'test' && isDirectRun) {
 }
 
 export default app;
+

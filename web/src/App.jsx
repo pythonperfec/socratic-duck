@@ -1,13 +1,13 @@
-import React, { useState } from 'react';
-import Tub from './components/Tub.jsx';
+import React, { useState, useEffect } from 'react';
 import Chat from './components/Chat.jsx';
 import Composer from './components/Composer.jsx';
-import PatienceMeter from './components/PatienceMeter.jsx';
-import BlabStamp, { BlockedBadge } from './components/BlabStamp.jsx';
-import CaseReport from './components/CaseReport.jsx';
+import { MODES, DEFAULT_MODE, getStoredMode, setStoredMode } from './modes/index.js';
+import ModeSwitcher from './modes/ModeSwitcher.jsx';
 import { INITIAL_MESSAGES } from './mock.js';
 
 export default function App() {
+  const [mode, setMode] = useState(getStoredMode);
+  const [spirit, setSpirit] = useState('COBOL');
   const [messages, setMessages] = useState(INITIAL_MESSAGES);
   const [mood, setMood] = useState('calm');
   const [patience, setPatience] = useState(70);
@@ -22,14 +22,39 @@ export default function App() {
   const [caseReport, setCaseReport] = useState(null);
   const [isGeneratingReport, setIsGeneratingReport] = useState(false);
 
-  // Squeeze the duck manually (Easter egg!)
+  // Synchronize mode attribute with document.body for theme styles
+  useEffect(() => {
+    document.body.dataset.mode = mode;
+  }, [mode]);
+
+  // Handle mode change via ModeSwitcher
+  const handleModeChange = (newMode) => {
+    if (MODES[newMode]) {
+      setMode(newMode);
+      setStoredMode(newMode);
+    }
+  };
+
+  // Active mode components & labels from registry
+  const activeModeConfig = MODES[mode] || MODES[DEFAULT_MODE];
+  const {
+    Scene: ModeScene,
+    Meter: ModeMeter,
+    Stamp: ModeStamp,
+    BlockedBadge: ModeBlockedBadge,
+    ChatBubble: ModeChatBubble,
+    ReportCard: ModeReportCard,
+    labels: modeLabels
+  } = activeModeConfig;
+
+  // Squeeze the duck / spirit manually (Easter egg!)
   const handleDuckSqueeze = () => {
     const moods = ['calm', 'squint', 'grumpy', 'delighted'];
     const nextMood = moods[(moods.indexOf(mood) + 1) % moods.length];
     setMood(nextMood);
   };
 
-  // Trigger the Blab Stamp for testing / dev review
+  // Trigger the Stamp for testing / dev review
   const triggerDevStamp = () => {
     setBlockedCount(prev => prev + 1);
     setStampTriggered(true);
@@ -56,7 +81,9 @@ export default function App() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          history: messages.map(m => ({ role: m.role, text: m.text }))
+          history: messages.map(m => ({ role: m.role, text: m.text })),
+          mode,
+          spirit: mode === 'seance' ? spirit : undefined
         })
       });
 
@@ -76,7 +103,8 @@ export default function App() {
         flashcard: {
           q: "What was the core realization from this debugging session?",
           a: "Tracing the execution flow directly reveals hidden assumptions."
-        }
+        },
+        farewell: mode === 'seance' ? `The spirit of ${spirit} bows from across the ethereal veil. The bug is exorcised.` : undefined
       });
       setMood('delighted');
     } finally {
@@ -110,7 +138,9 @@ export default function App() {
             text: m.text
           })),
           image: image || undefined,
-          hintLevel
+          hintLevel,
+          mode,
+          spirit: mode === 'seance' ? spirit : undefined
         })
       });
 
@@ -151,12 +181,15 @@ export default function App() {
       setMessages(prev => [...prev, duckMsg]);
     } catch (err) {
       console.error('Chat error:', err);
+      const isSeance = mode === 'seance';
       const duckMsg = {
         id: `d-${Date.now()}`,
         role: 'duck',
         mood: 'grumpy',
         patienceDelta: -2,
-        text: `Quack! Trouble communicating with server: ${err.message}`,
+        text: isSeance
+          ? `The ethereal veil shudders: Trouble communicating with backend (${err.message})`
+          : `Quack! Trouble communicating with server: ${err.message}`,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       };
       setMessages(prev => [...prev, duckMsg]);
@@ -166,17 +199,18 @@ export default function App() {
   };
 
   return (
-    <div className="bathroom-app">
-      {/* Post-Mortem Case File Modal */}
+    <div className={`bathroom-app app-mode-${mode}`}>
+      {/* Post-Mortem Case File / Ofrenda Modal */}
       {caseReport && (
-        <CaseReport
+        <ModeReportCard
           report={caseReport}
           onClose={() => setCaseReport(null)}
+          spirit={spirit}
         />
       )}
 
-      {/* Rubber Stamp Overlay (Triggered on answer leak attempt) */}
-      <BlabStamp
+      {/* Rubber Stamp / Wax Seal Overlay */}
+      <ModeStamp
         show={stampTriggered}
         onDismiss={() => setStampTriggered(false)}
       />
@@ -184,12 +218,15 @@ export default function App() {
       {/* Top Header Bar */}
       <header className="app-header no-print">
         <div className="brand-group">
-          <div className="brand-icon">🦆</div>
+          <div className="brand-icon">{modeLabels.icon || '🦆'}</div>
           <div>
-            <h1 className="brand-title">Socratic Duck</h1>
-            <p className="brand-tagline">Bathroom Debugger • Strictly Engineered to Never Give the Fix</p>
+            <h1 className="brand-title">{modeLabels.title || 'Socratic Duck'}</h1>
+            <p className="brand-tagline">{modeLabels.tagline}</p>
           </div>
         </div>
+
+        {/* Mode Switcher Segmented Control */}
+        <ModeSwitcher currentMode={mode} onModeChange={handleModeChange} />
 
         <div className="header-actions">
           {/* Solved it! Button */}
@@ -198,13 +235,13 @@ export default function App() {
             className="solved-it-btn"
             onClick={handleSolvedIt}
             disabled={isGeneratingReport}
-            title="Generate Post-Mortem Case File & Flashcard"
+            title="Generate Post-Mortem Report"
           >
-            {isGeneratingReport ? '🦆 Filing Case...' : '🏆 Solved it!'}
+            {isGeneratingReport ? (modeLabels.solveLoading || '🦆 Filing...') : (modeLabels.solveBtn || '🏆 Solved it!')}
           </button>
 
           {/* Blocked Leaks Badge */}
-          <BlockedBadge
+          <ModeBlockedBadge
             count={blockedCount}
             onClick={triggerDevStamp}
           />
@@ -214,42 +251,44 @@ export default function App() {
             type="button"
             className="dev-stamp-btn"
             onClick={triggerDevStamp}
-            title="Test the rubber stamp animation"
+            title="Test the leak stamp animation"
           >
-            🧪 Test Stamp
+            {modeLabels.testStampBtn || '🧪 Test Stamp'}
           </button>
 
           <button
             type="button"
             className="dev-drain-btn"
             onClick={triggerDrainSequence}
-            title="Test patience reaching 0 (duck sigh, water drain, hint ladder level up)"
+            title="Test patience reaching 0"
           >
-            🧪 Test Drain
+            {modeLabels.testDrainBtn || '🧪 Test Drain'}
           </button>
         </div>
       </header>
 
       {/* Main Split Layout */}
       <main className="app-workspace no-print">
-        {/* Left Column: Bathtub Scene & Patience Meter */}
-        <section className="scene-column" aria-label="Bathtub & State">
-          <Tub
+        {/* Left Column: Scene & Patience Meter */}
+        <section className="scene-column" aria-label="Scene & State">
+          <ModeScene
             mood={mood}
             onDuckClick={handleDuckSqueeze}
             isDraining={isDraining}
             hintLevel={hintLevel}
+            activeSpirit={spirit}
+            onSpiritChange={setSpirit}
           />
 
           <div className="controls-row">
-            <PatienceMeter
+            <ModeMeter
               patience={patience}
               lastDelta={lastDelta}
             />
 
             {/* Quick Mood Selector for Judge & Developer Demos */}
-            <div className="mood-sampler" title="Demonstrate all 4 SVG Duck expressions">
-              <span className="sampler-label">Duck Mood:</span>
+            <div className="mood-sampler" title="Demonstrate all 4 mood expressions">
+              <span className="sampler-label">{modeLabels.moodLabel || 'Mood:'}</span>
               <div className="mood-pill-group">
                 {['calm', 'squint', 'grumpy', 'delighted'].map(m => (
                   <button
@@ -258,10 +297,7 @@ export default function App() {
                     className={`mood-pill ${mood === m ? 'active' : ''}`}
                     onClick={() => setMood(m)}
                   >
-                    {m === 'calm' && '😌 calm'}
-                    {m === 'squint' && '🧐 squint'}
-                    {m === 'grumpy' && '😤 grumpy'}
-                    {m === 'delighted' && '✨ delighted'}
+                    {modeLabels.moods?.[m] || m}
                   </button>
                 ))}
               </div>
@@ -269,11 +305,13 @@ export default function App() {
           </div>
         </section>
 
-        {/* Right Column: Soap-Bubble Chat & Composer */}
+        {/* Right Column: Dialogue & Composer */}
         <section className="dialogue-column" aria-label="Socratic Interrogation">
           <Chat
             messages={messages}
             isDuckTyping={isDuckTyping}
+            ChatBubbleComponent={ModeChatBubble}
+            modeId={mode}
           />
 
           <Composer
