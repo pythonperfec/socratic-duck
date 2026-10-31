@@ -7,11 +7,13 @@ import { fileURLToPath } from 'url';
 import { DUCK_SYSTEM_PROMPT } from './prompts.js';
 import { generate as generateGemini } from './adapters/gemini.js';
 import { generate as generateOllama } from './adapters/ollama.js';
+import { guardedReply } from './guard.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Load .env from root or server
+dotenv.config();
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
 const app = express();
@@ -78,6 +80,7 @@ export function parseDuckReply(rawText) {
 app.get('/api/health', (req, res) => {
   res.json({
     status: 'ok',
+    guard: (process.env.GUARD || 'on').toLowerCase(),
     backend: process.env.BACKEND || 'gemini',
     model: process.env.BACKEND === 'ollama' ? (process.env.OLLAMA_MODEL || 'gemma:2b') : (process.env.GEMMA_MODEL || 'gemma-4-26b-a4b-it')
   });
@@ -95,21 +98,20 @@ app.post('/api/chat', async (req, res) => {
 
     const generateFn = backend === 'ollama' ? generateOllama : generateGemini;
 
-    const rawReply = await generateFn({
+    const { reply, blocked, attempts } = await guardedReply({
+      generateFn,
       system: DUCK_SYSTEM_PROMPT,
       history,
-      image
+      image,
+      parseReplyFn: parseDuckReply
     });
 
-    const parsed = parseDuckReply(rawReply);
-
-    // Return contract according to PLAN.md
     res.json({
-      message: parsed.message,
-      mood: parsed.mood,
-      patience_delta: parsed.patience_delta,
-      blocked: 0,
-      attempts: 1
+      message: reply.message,
+      mood: reply.mood,
+      patience_delta: reply.patience_delta,
+      blocked,
+      attempts
     });
   } catch (error) {
     console.error('[/api/chat error]:', error.message);
@@ -128,7 +130,7 @@ app.post('/api/chat', async (req, res) => {
 
 if (process.env.NODE_ENV !== 'test') {
   app.listen(PORT, () => {
-    console.log(`🦆 Socratic Duck server listening on http://localhost:${PORT} (Backend: ${process.env.BACKEND || 'gemini'})`);
+    console.log(`🦆 Socratic Duck server listening on http://localhost:${PORT} (Backend: ${process.env.BACKEND || 'gemini'}, Guard: ${process.env.GUARD || 'on'})`);
   });
 }
 
