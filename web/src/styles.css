@@ -1,14 +1,39 @@
+/* ========================================================
+   SOCRATIC DUCK - BATHROOM DESIGN SYSTEM & STYLES
+   Visual Identity: "Bathroom, not dashboard"
+   No AI slop: No purple/blue gradients, no generic frosted glass
+   ======================================================== */
+
 :root {
   --color-tile-teal: #2E9C9A;
+  --color-tile-teal-dark: #237A78;
+  --color-tile-teal-light: #3BB5B2;
   --color-grout: #E9F1EF;
   --color-duck-yellow: #F5C400;
+  --color-duck-yellow-hover: #E5B400;
   --color-soap-pink: #F2B6B0;
+  --color-soap-pink-dark: #E09890;
   --color-towel-cream: #FBF4E4;
+  --color-porcelain-white: #FFFFFF;
   --color-ink: #1F2D2D;
+  --color-ink-muted: #536B6B;
+  --color-stamp-red: #D63031;
+  --color-stamp-red-dark: #B71515;
 
   --font-heading: 'Fredoka', cursive, sans-serif;
   --font-mono: 'IBM Plex Mono', monospace;
-  --font-body: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+
+  --radius-sm: 8px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-bubble: 28px;
+  --radius-full: 9999px;
+
+  --shadow-tile: 0 2px 4px rgba(31, 45, 45, 0.08);
+  --shadow-tub: 0 12px 28px rgba(31, 45, 45, 0.16);
+  --shadow-bubble: 0 4px 12px rgba(46, 156, 154, 0.12);
+  --shadow-stamp: 0 8px 30px rgba(214, 48, 49, 0.35);
 }
 
 * {
@@ -22,12 +47,1185 @@ body {
   background-color: var(--color-grout);
   color: var(--color-ink);
   min-height: 100vh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
 }
 
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-heading);
+  letter-spacing: 0.02em;
 }
 
 code, pre {
   font-family: var(--font-mono);
+}
+
+/* Base App Shell */
+.bathroom-app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 16px 24px;
+  gap: 16px;
+}
+
+/* ========================================================
+   TOP HEADER
+   ======================================================== */
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px;
+  background-color: var(--color-porcelain-white);
+  border: 3px solid var(--color-tile-teal);
+  border-radius: var(--radius-md);
+  box-shadow: 0 4px 0 var(--color-tile-teal-dark);
+}
+
+.brand-group {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.brand-icon {
+  font-size: 2.2rem;
+  line-height: 1;
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.15));
+}
+
+.brand-title {
+  font-size: 1.8rem;
+  color: var(--color-ink);
+  line-height: 1.1;
+}
+
+.brand-tagline {
+  font-size: 0.85rem;
+  color: var(--color-tile-teal-dark);
+  font-weight: 500;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Blocked Badge */
+.blocked-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  background-color: var(--color-towel-cream);
+  border: 2px dashed var(--color-stamp-red);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-stamp-red-dark);
+  cursor: pointer;
+  transition: transform 0.15s ease, background-color 0.15s ease;
+}
+
+.blocked-badge:hover {
+  transform: scale(1.03);
+  background-color: #F8E7D8;
+}
+
+.badge-count {
+  background-color: var(--color-stamp-red);
+  color: white;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  font-size: 0.85rem;
+}
+
+.dev-stamp-btn {
+  background-color: var(--color-soap-pink);
+  border: 2px solid var(--color-soap-pink-dark);
+  color: var(--color-ink);
+  padding: 8px 14px;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-heading);
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.dev-stamp-btn:hover {
+  background-color: var(--color-soap-pink-dark);
+  transform: translateY(-1px);
+}
+
+/* ========================================================
+   WORKSPACE (SPLIT COLUMNS)
+   ======================================================== */
+.app-workspace {
+  display: grid;
+  grid-template-columns: 460px 1fr;
+  gap: 20px;
+  flex: 1;
+  min-height: calc(100vh - 120px);
+}
+
+/* ========================================================
+   LEFT COLUMN: BATHROOM SCENE & CONTROLS
+   ======================================================== */
+.scene-column {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Tub Scene & Ceramic Tile Grid Wall */
+.tub-scene {
+  background-color: var(--color-tile-teal);
+  border-radius: var(--radius-lg);
+  position: relative;
+  overflow: hidden;
+  border: 4px solid var(--color-tile-teal-dark);
+  box-shadow: var(--shadow-tub);
+  display: flex;
+  flex-direction: column;
+  height: 380px;
+}
+
+/* Tile Grid Background Pattern */
+.tile-wall {
+  flex: 1;
+  background-image: 
+    linear-gradient(to right, var(--color-grout) 2px, transparent 2px),
+    linear-gradient(to bottom, var(--color-grout) 2px, transparent 2px);
+  background-size: 38px 38px;
+  background-position: -2px -2px;
+  position: relative;
+  padding: 16px;
+}
+
+/* Towel Rail on wall */
+.towel-rail {
+  position: absolute;
+  top: 14px;
+  right: 24px;
+  display: flex;
+  align-items: center;
+}
+
+.rail-bar {
+  width: 90px;
+  height: 6px;
+  background: #D8E2E0;
+  border-radius: 3px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+.rail-bracket {
+  width: 10px;
+  height: 12px;
+  background: #A0B3B0;
+  border-radius: 2px;
+}
+
+.hanging-towel {
+  position: absolute;
+  top: 6px;
+  right: 18px;
+  width: 54px;
+  height: 80px;
+  background-color: var(--color-towel-cream);
+  border-radius: 2px 2px 6px 6px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+  border-bottom: 4px solid #E5DCB8;
+}
+
+/* Vintage Faucet */
+.faucet-assembly {
+  position: absolute;
+  top: 18px;
+  left: 36px;
+}
+
+.faucet-pipe {
+  width: 14px;
+  height: 48px;
+  background: linear-gradient(to right, #B0BEC5, #ECEFF1, #78909C);
+  border-radius: 7px 7px 0 0;
+}
+
+.faucet-spout {
+  width: 32px;
+  height: 14px;
+  background: linear-gradient(to bottom, #ECEFF1, #90A4AE);
+  border-radius: 0 8px 8px 0;
+  position: relative;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+.faucet-drip {
+  position: absolute;
+  top: 14px;
+  right: 6px;
+  width: 8px;
+  height: 12px;
+  background-color: rgba(255, 255, 255, 0.85);
+  border-radius: 50%;
+  animation: waterDrip 3.5s infinite ease-in;
+}
+
+@keyframes waterDrip {
+  0% { transform: translateY(0) scale(0.6); opacity: 0; }
+  40% { transform: translateY(0) scale(1); opacity: 0.9; }
+  60% { transform: translateY(60px) scale(0.9); opacity: 0.6; }
+  75% { transform: translateY(110px) scale(0.3); opacity: 0; }
+  100% { transform: translateY(0) scale(0.6); opacity: 0; }
+}
+
+.faucet-knob {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  top: -4px;
+  box-shadow: 0 2px 3px rgba(0,0,0,0.2);
+}
+
+.faucet-knob.hot {
+  left: -12px;
+  background: #E55039;
+  border: 2px solid #C0392B;
+}
+
+.faucet-knob.cold {
+  left: 10px;
+  background: #4A69BD;
+  border: 2px solid #1E3799;
+}
+
+/* Porcelain Bathtub Basin */
+.tub-basin-container {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 220px;
+}
+
+/* Soap Dish with Soap Bar */
+.soap-dish {
+  position: absolute;
+  top: -14px;
+  right: 48px;
+  z-index: 10;
+  width: 64px;
+  height: 16px;
+  background: #CAD3C8;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.18);
+}
+
+.soap-bar {
+  width: 52px;
+  height: 20px;
+  background-color: var(--color-soap-pink);
+  border: 2px solid var(--color-soap-pink-dark);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.12);
+  margin-top: -8px;
+}
+
+.soap-emboss {
+  font-family: var(--font-heading);
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--color-soap-pink-dark);
+  letter-spacing: 0.05em;
+}
+
+/* Porcelain Bathtub Rim */
+.tub-rim {
+  height: 28px;
+  background: linear-gradient(to bottom, #FFFFFF, #F1F2F6);
+  border-radius: 24px 24px 0 0;
+  border-top: 3px solid #FFFFFF;
+  box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.8), 0 4px 8px rgba(0, 0, 0, 0.1);
+  position: relative;
+  z-index: 5;
+}
+
+/* Tub Interior / Bath Water Chamber */
+.tub-interior {
+  position: relative;
+  height: 130px;
+  background: linear-gradient(180deg, #167D7B 0%, #105958 100%);
+  overflow: hidden;
+}
+
+/* Water surface & ripples */
+.water-surface {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.water-wave {
+  position: absolute;
+  left: -20%;
+  width: 140%;
+  height: 36px;
+  border-radius: 50%;
+  opacity: 0.45;
+}
+
+.wave-back {
+  top: 10px;
+  background: #3BB5B2;
+  animation: waveMotion 6s ease-in-out infinite alternate;
+}
+
+.wave-mid {
+  top: 25px;
+  background: #48C9C6;
+  opacity: 0.6;
+  animation: waveMotion 4.5s ease-in-out infinite alternate-reverse;
+}
+
+.wave-front {
+  bottom: 0;
+  height: 70px;
+  background: linear-gradient(180deg, rgba(59, 181, 178, 0.4) 0%, rgba(16, 89, 88, 0.8) 100%);
+  pointer-events: none;
+}
+
+@keyframes waveMotion {
+  0% { transform: translateX(-20px) scaleY(1); }
+  100% { transform: translateX(20px) scaleY(1.2); }
+}
+
+/* The Duck in the Tub */
+.duck-wrapper {
+  position: absolute;
+  top: -15px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 6;
+  cursor: pointer;
+  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.duck-wrapper:hover {
+  transform: translateX(-50%) scale(1.05);
+}
+
+.duck-wrapper:active {
+  transform: translateX(-50%) scale(0.96);
+}
+
+/* Duck Bob Animation */
+.duck-container {
+  animation: duckBob 3s ease-in-out infinite;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@keyframes duckBob {
+  0% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  35% {
+    transform: translateY(-6px) rotate(-1.5deg);
+  }
+  70% {
+    transform: translateY(3px) rotate(1.5deg);
+  }
+  100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+}
+
+.duck-svg {
+  width: 160px;
+  height: 140px;
+  display: block;
+}
+
+/* Foam Suds Clusters */
+.foam-cluster {
+  position: absolute;
+  bottom: 24px;
+  display: flex;
+  align-items: center;
+  z-index: 7;
+}
+
+.left-foam {
+  left: 20px;
+}
+
+.right-foam {
+  right: 20px;
+}
+
+.sud {
+  background: radial-gradient(circle at 35% 35%, #FFFFFF 0%, #FBF4E4 70%, #F2B6B0 100%);
+  border-radius: 50%;
+  display: inline-block;
+  opacity: 0.88;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.sud-1 { width: 22px; height: 22px; margin-right: -8px; }
+.sud-2 { width: 30px; height: 30px; margin-right: -10px; margin-top: -10px; }
+.sud-3 { width: 18px; height: 18px; margin-right: -6px; }
+.sud-4 { width: 26px; height: 26px; margin-right: -8px; margin-top: -6px; }
+.sud-5 { width: 16px; height: 16px; }
+
+.sud-6 { width: 26px; height: 26px; margin-right: -8px; }
+.sud-7 { width: 34px; height: 34px; margin-right: -10px; margin-top: -12px; }
+.sud-8 { width: 20px; height: 20px; margin-right: -6px; }
+.sud-9 { width: 18px; height: 18px; }
+
+/* Floating Bubbles */
+.floating-bubble {
+  position: absolute;
+  background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.9), rgba(242, 182, 176, 0.35) 60%, rgba(46, 156, 154, 0.4) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  border-radius: 50%;
+  pointer-events: none;
+  animation: bubbleFloat 5s infinite ease-in;
+}
+
+.bubble-a { width: 18px; height: 18px; left: 30%; bottom: 10px; animation-delay: 0s; }
+.bubble-b { width: 12px; height: 12px; left: 65%; bottom: 15px; animation-delay: 1.8s; }
+.bubble-c { width: 22px; height: 22px; left: 45%; bottom: 5px; animation-delay: 3.2s; }
+
+@keyframes bubbleFloat {
+  0% { transform: translateY(0) scale(0.8); opacity: 0; }
+  20% { opacity: 0.85; }
+  80% { opacity: 0.8; transform: translateY(-70px) scale(1.1); }
+  100% { opacity: 0; transform: translateY(-110px) scale(1.2); }
+}
+
+/* Tub Feet Porcelain */
+.tub-body {
+  height: 60px;
+  background: linear-gradient(to bottom, #F1F2F6, #DCDDE1);
+  border-radius: 0 0 40px 40px;
+  position: relative;
+  box-shadow: inset 0 6px 8px rgba(0, 0, 0, 0.12);
+}
+
+.tub-feet {
+  position: absolute;
+  bottom: -10px;
+  width: 28px;
+  height: 18px;
+  background: #C4A45A;
+  border-radius: 4px 4px 14px 14px;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.25);
+}
+
+.left-foot { left: 48px; }
+.right-foot { right: 48px; }
+
+/* Controls Row: Patience Meter & Mood Sampler */
+.controls-row {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* ========================================================
+   PATIENCE METER GAUGE
+   ======================================================== */
+.patience-meter-card {
+  background: var(--color-porcelain-white);
+  border: 3px solid var(--color-tile-teal);
+  border-radius: var(--radius-md);
+  padding: 14px 18px;
+  box-shadow: 0 4px 0 var(--color-tile-teal-dark);
+}
+
+.meter-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.meter-title {
+  font-family: var(--font-heading);
+  font-size: 1.05rem;
+  color: var(--color-ink);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.meter-status {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+}
+
+.meter-status.delighted { background-color: #D4EDDA; color: #155724; }
+.meter-status.calm { background-color: #D1ECF1; color: #0C5460; }
+.meter-status.grumpy { background-color: #F8D7DA; color: #721C24; }
+
+.gauge-housing {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+/* Delta Pop Badge */
+.delta-badge {
+  position: absolute;
+  top: -24px;
+  right: 10px;
+  font-family: var(--font-heading);
+  font-size: 1rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  animation: deltaPop 2s forwards ease-out;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.delta-badge.positive {
+  background-color: #2ECC71;
+  color: white;
+}
+
+.delta-badge.negative {
+  background-color: var(--color-stamp-red);
+  color: white;
+}
+
+@keyframes deltaPop {
+  0% { transform: translateY(6px) scale(0.7); opacity: 0; }
+  25% { transform: translateY(-4px) scale(1.15); opacity: 1; }
+  75% { transform: translateY(-10px) scale(1); opacity: 1; }
+  100% { transform: translateY(-18px) scale(0.9); opacity: 0; }
+}
+
+/* Gauge Glass Tube */
+.gauge-glass {
+  flex: 1;
+  height: 24px;
+  background-color: #E2E8E6;
+  border: 2px solid #8FA6A4;
+  border-radius: 12px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+.gauge-ticks {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 4px;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.tick {
+  width: 2px;
+  height: 12px;
+  background-color: rgba(31, 45, 45, 0.35);
+}
+
+.gauge-liquid {
+  height: 100% !important; /* using horizontal progress bar for wide readability */
+  background: linear-gradient(90deg, #F5C400 0%, #FFD700 80%, #FFA502 100%);
+  border-radius: 10px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  transition: width 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 0 8px rgba(245, 196, 0, 0.6);
+}
+
+.gauge-readout {
+  display: flex;
+  align-items: baseline;
+  gap: 2px;
+  min-width: 65px;
+  font-family: var(--font-heading);
+}
+
+.readout-value {
+  font-size: 1.5rem;
+  color: var(--color-ink);
+  font-weight: 700;
+}
+
+.readout-max {
+  font-size: 0.85rem;
+  color: var(--color-ink-muted);
+}
+
+/* Mood Sampler Pills */
+.mood-sampler {
+  background: var(--color-porcelain-white);
+  border: 2px solid #CBD5D1;
+  border-radius: var(--radius-md);
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.sampler-label {
+  font-family: var(--font-heading);
+  font-size: 0.85rem;
+  color: var(--color-ink-muted);
+}
+
+.mood-pill-group {
+  display: flex;
+  gap: 6px;
+}
+
+.mood-pill {
+  padding: 4px 8px;
+  font-size: 0.78rem;
+  font-family: var(--font-body);
+  background-color: var(--color-grout);
+  border: 1px solid #BAC9C6;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  color: var(--color-ink);
+  transition: all 0.15s ease;
+}
+
+.mood-pill:hover {
+  background-color: #DDE7E4;
+}
+
+.mood-pill.active {
+  background-color: var(--color-duck-yellow);
+  border-color: #D4A700;
+  font-weight: 600;
+}
+
+/* ========================================================
+   RIGHT COLUMN: CHAT & DIALOGUE
+   ======================================================== */
+.dialogue-column {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--color-porcelain-white);
+  border: 3px solid var(--color-tile-teal);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 6px 0 var(--color-tile-teal-dark);
+  overflow: hidden;
+  height: calc(100vh - 120px);
+}
+
+/* Chat Viewport */
+.chat-viewport {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px 24px;
+  background-color: #FAFDFC;
+  background-image: 
+    radial-gradient(circle, #E1ECE9 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+.chat-messages-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Message Rows */
+.message-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  max-width: 82%;
+  animation: bubbleFloatIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+.message-row.duck-row {
+  align-self: flex-start;
+}
+
+.message-row.user-row {
+  align-self: flex-end;
+  justify-content: flex-end;
+}
+
+@keyframes bubbleFloatIn {
+  0% {
+    opacity: 0;
+    transform: translateY(14px) scale(0.92);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Duck Avatar next to bubble */
+.duck-avatar-bubble {
+  width: 38px;
+  height: 38px;
+  background-color: var(--color-duck-yellow);
+  border: 2px solid #E0B000;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.15rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  flex-shrink: 0;
+  margin-bottom: 4px;
+}
+
+/* Soap-Bubble Message Container */
+.soap-bubble {
+  position: relative;
+  padding: 14px 18px;
+  border-radius: var(--radius-bubble);
+  box-shadow: var(--shadow-bubble);
+  font-size: 0.98rem;
+  line-height: 1.5;
+  word-break: break-word;
+  transition: transform 0.15s ease;
+}
+
+.soap-bubble:hover {
+  transform: translateY(-1px);
+}
+
+/* Duck Soap Bubble (Pearlescent translucent bath bubble look) */
+.duck-bubble {
+  background: radial-gradient(circle at 20% 20%, #FFFFFF 0%, #F0F9F8 60%, #E2F2F0 100%);
+  border: 2px solid var(--color-tile-teal);
+  border-bottom-left-radius: 6px;
+  color: var(--color-ink);
+}
+
+/* Iridescent Sheen on Bubble */
+.bubble-sheen {
+  position: absolute;
+  top: 4px;
+  left: 12px;
+  width: 28px;
+  height: 9px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(242, 182, 176, 0.45) 50%, rgba(46, 156, 154, 0.3) 100%);
+  border-radius: 50%;
+  transform: rotate(-12deg);
+  pointer-events: none;
+}
+
+/* User Soap Bubble (Warm towel cream) */
+.user-bubble {
+  background-color: var(--color-towel-cream);
+  border: 2px solid #E2D9C3;
+  border-bottom-right-radius: 6px;
+  color: var(--color-ink);
+}
+
+/* Attachment Screenshot */
+.bubble-attachment {
+  margin-bottom: 10px;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  border: 2px solid rgba(31, 45, 45, 0.15);
+  max-width: 320px;
+}
+
+.attached-img {
+  width: 100%;
+  max-height: 180px;
+  object-fit: cover;
+  display: block;
+}
+
+.bubble-text {
+  margin-bottom: 4px;
+}
+
+.bubble-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.bubble-timestamp {
+  font-size: 0.72rem;
+  color: var(--color-ink-muted);
+  font-family: var(--font-mono);
+}
+
+.patience-tag {
+  font-size: 0.7rem;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+
+.patience-tag.gain {
+  background-color: #E8F8F5;
+  color: #117A65;
+  border: 1px solid #A3E4D7;
+}
+
+.patience-tag.loss {
+  background-color: #FDEDEC;
+  color: #C0392B;
+  border: 1px solid #FADBD8;
+}
+
+/* Typing Bubble */
+.typing-bubble {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+}
+
+.typing-suds {
+  display: flex;
+  gap: 5px;
+}
+
+.typing-dot {
+  width: 9px;
+  height: 9px;
+  background-color: var(--color-tile-teal);
+  border-radius: 50%;
+  animation: typingBounce 1.4s infinite ease-in-out both;
+}
+
+.typing-dot.d1 { animation-delay: -0.32s; }
+.typing-dot.d2 { animation-delay: -0.16s; }
+.typing-dot.d3 { animation-delay: 0s; }
+
+@keyframes typingBounce {
+  0%, 80%, 100% { transform: scale(0.6); opacity: 0.5; }
+  40% { transform: scale(1.15); opacity: 1; }
+}
+
+.typing-hint {
+  font-size: 0.82rem;
+  font-style: italic;
+  color: var(--color-ink-muted);
+}
+
+/* ========================================================
+   COMPOSER TRAY
+   ======================================================== */
+.composer-container {
+  background-color: var(--color-porcelain-white);
+  border-top: 3px solid var(--color-grout);
+  padding: 14px 18px;
+}
+
+/* Thumbnail preview bar */
+.thumbnail-preview-bar {
+  margin-bottom: 10px;
+}
+
+.thumbnail-card {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 8px 4px 4px;
+  background-color: var(--color-grout);
+  border: 2px solid var(--color-tile-teal);
+  border-radius: var(--radius-sm);
+  position: relative;
+}
+
+.thumbnail-img {
+  width: 44px;
+  height: 44px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.thumbnail-label {
+  font-size: 0.8rem;
+  font-family: var(--font-mono);
+  color: var(--color-ink);
+}
+
+.remove-thumb-btn {
+  background: var(--color-stamp-red);
+  color: white;
+  border: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  font-size: 0.75rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.composer-tray {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+}
+
+.attach-btn {
+  background-color: var(--color-towel-cream);
+  border: 2px solid #D5CEBE;
+  width: 46px;
+  height: 46px;
+  border-radius: var(--radius-md);
+  font-size: 1.3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.15s ease;
+}
+
+.attach-btn:hover:not(:disabled) {
+  background-color: #ECE5D2;
+  transform: translateY(-2px);
+}
+
+.composer-textarea {
+  flex: 1;
+  background-color: #F8FAF9;
+  border: 2px solid #C4D6D3;
+  border-radius: var(--radius-md);
+  padding: 12px 16px;
+  font-family: var(--font-body);
+  font-size: 0.98rem;
+  color: var(--color-ink);
+  outline: none;
+  resize: none;
+  line-height: 1.4;
+  min-height: 46px;
+  max-height: 120px;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.composer-textarea:focus {
+  border-color: var(--color-tile-teal);
+  background-color: #FFFFFF;
+}
+
+.send-btn {
+  background-color: var(--color-duck-yellow);
+  border: 3px solid #D4A700;
+  border-radius: var(--radius-md);
+  height: 46px;
+  padding: 0 18px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  box-shadow: 0 3px 0 #C49500;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+
+.send-btn:hover:not(:disabled) {
+  background-color: #FFD53D;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 0 #C49500;
+}
+
+.send-btn:active:not(:disabled) {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 #C49500;
+}
+
+.send-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.send-text {
+  font-family: var(--font-heading);
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-ink);
+}
+
+.send-duck-icon {
+  font-size: 1.1rem;
+}
+
+/* ========================================================
+   RUBBER STAMP ("DUCK ALMOST BLABBED")
+   ======================================================== */
+.stamp-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(31, 45, 45, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  cursor: pointer;
+  animation: fadeInOverlay 0.15s ease-out;
+}
+
+@keyframes fadeInOverlay {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.stamp-card {
+  transform: rotate(-9deg);
+  animation: stampSlam 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+/* Thud-like Slam Down Animation */
+@keyframes stampSlam {
+  0% {
+    transform: scale(3.5) rotate(-20deg);
+    opacity: 0;
+  }
+  65% {
+    transform: scale(0.92) rotate(-8deg);
+    opacity: 1;
+  }
+  85% {
+    transform: scale(1.04) rotate(-10deg);
+  }
+  100% {
+    transform: scale(1) rotate(-9deg);
+    opacity: 1;
+  }
+}
+
+.stamp-body {
+  background-color: rgba(255, 255, 255, 0.94);
+  padding: 18px 28px;
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-stamp), 0 0 0 8px rgba(255, 255, 255, 0.6);
+}
+
+.stamp-outer-border {
+  border: 5px solid var(--color-stamp-red);
+  padding: 8px;
+  border-radius: 4px;
+}
+
+.stamp-inner-border {
+  border: 2px dashed var(--color-stamp-red);
+  padding: 14px 24px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.stamp-subtext {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  letter-spacing: 0.15em;
+  color: var(--color-stamp-red);
+  font-weight: 700;
+}
+
+.stamp-headline {
+  font-family: var(--font-heading);
+  font-size: 2.3rem;
+  font-weight: 800;
+  color: var(--color-stamp-red);
+  line-height: 1.1;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  text-shadow: 1px 1px 0 rgba(183, 21, 21, 0.4);
+}
+
+.stamp-warning {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  color: var(--color-stamp-red-dark);
+  font-weight: 600;
+}
+
+/* ========================================================
+   RESPONSIVE LAYOUTS
+   ======================================================== */
+@media (max-width: 980px) {
+  .app-workspace {
+    grid-template-columns: 1fr;
+    height: auto;
+  }
+
+  .dialogue-column {
+    height: 600px;
+  }
+
+  .tub-scene {
+    height: 320px;
+  }
+}
+
+@media (max-width: 600px) {
+  .bathroom-app {
+    padding: 10px;
+  }
+
+  .app-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .header-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .tub-scene {
+    height: 280px;
+  }
+
+  .duck-svg {
+    width: 130px;
+    height: 115px;
+  }
+
+  .stamp-headline {
+    font-size: 1.6rem;
+  }
+
+  .mood-sampler {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 }
