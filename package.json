@@ -2,11 +2,13 @@
   "name": "socratic-duck",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "description": "A rubber duck debugging companion that interrogates you about your bug and never gives the fix.",
   "scripts": {
     "dev": "concurrently --kill-others-on-fail -n \"SERVER,WEB\" -c \"teal,yellow\" \"npm run dev --prefix server\" \"npm run dev --prefix web\"",
     "dev:server": "npm run dev --prefix server",
-    "dev:web": "npm run dev --prefix web"
+    "dev:web": "npm run dev --prefix web",
+    "bench": "node bench/run.js"
   },
   "devDependencies": {
     "concurrently": "^9.1.2"

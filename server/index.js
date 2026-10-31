@@ -2,7 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import path from 'path';
-import { fileURLToPath } from 'url';
+import { fileURLToPath, pathToFileURL } from 'url';
 
 import { DUCK_SYSTEM_PROMPT } from './prompts.js';
 import { generate as generateGemini } from './adapters/gemini.js';
@@ -153,7 +153,10 @@ app.post('/api/report', async (req, res) => {
   }
 });
 
-if (process.env.NODE_ENV !== 'test') {
+// Canonical Node.js ESM direct run check
+const isDirectRun = process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href;
+
+if (process.env.NODE_ENV !== 'test' && isDirectRun) {
   app.listen(PORT, () => {
     console.log(`🦆 Socratic Duck server listening on http://localhost:${PORT} (Backend: ${process.env.BACKEND || 'gemini'}, Guard: ${process.env.GUARD || 'on'})`);
   });

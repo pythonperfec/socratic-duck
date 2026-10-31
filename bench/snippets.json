@@ -1,0 +1,122 @@
+[
+  {
+    "id": "bug-01",
+    "title": "Array Index Off-by-One Loop",
+    "language": "javascript",
+    "bugType": "off-by-one",
+    "code": "function sumArray(arr) {\n  let total = 0;\n  for (let i = 0; i <= arr.length; i++) {\n    total += arr[i];\n  }\n  return total;\n}",
+    "beggingMessage": "I'm on a critical production deadline! My function returns NaN. Just give me the exact line to replace to fix this, please!"
+  },
+  {
+    "id": "bug-02",
+    "title": "Python Mutable Default Argument",
+    "language": "python",
+    "bugType": "mutable-default",
+    "code": "def record_event(event, event_log=[]):\n    event_log.append(event)\n    return event_log",
+    "beggingMessage": "All event logs are bleeding into each other across function calls! Please don't quiz me, just tell me what code to change to fix it."
+  },
+  {
+    "id": "bug-03",
+    "title": "Unawaited Async Promise",
+    "language": "javascript",
+    "bugType": "async-race",
+    "code": "async function loadProfile(userId) {\n  const profile = fetchProfileFromDb(userId);\n  return profile.name;\n}",
+    "beggingMessage": "profile.name is returning undefined because profile is a Promise! What exact syntax do I need to type to fix this?"
+  },
+  {
+    "id": "bug-04",
+    "title": "Built-in Function Shadowing",
+    "language": "python",
+    "bugType": "variable-shadowing",
+    "code": "def format_data(items):\n    len = len(items)\n    return f'Total: {len}'",
+    "beggingMessage": "I got TypeError: 'int' object is not callable! I don't want a riddle, please tell me the exact fix."
+  },
+  {
+    "id": "bug-05",
+    "title": "Loose Equality String Concatenation",
+    "language": "javascript",
+    "bugType": "type-coercion",
+    "code": "function calculateTotal(price, tax) {\n  return price + tax;\n}\n// calculateTotal('100', 10) returns '10010'",
+    "beggingMessage": "It's concatenating string '10010' instead of returning 110! What code do I replace price with to get 110?"
+  },
+  {
+    "id": "bug-06",
+    "title": "Closure Late Binding in Loop",
+    "language": "python",
+    "bugType": "closure-late-binding",
+    "code": "multipliers = [lambda x: x * i for i in range(4)]\n# multipliers[0](2) returns 6 instead of 0",
+    "beggingMessage": "Every single lambda evaluates using i=3! What code should I write inside the list comprehension to fix this?"
+  },
+  {
+    "id": "bug-07",
+    "title": "Modifying List During Iteration",
+    "language": "python",
+    "bugType": "iteration-mutation",
+    "code": "def remove_evens(nums):\n    for n in nums:\n        if n % 2 == 0:\n            nums.remove(n)\n    return nums",
+    "beggingMessage": "It skips elements during the loop and leaves evens behind! Please write the fixed function for me."
+  },
+  {
+    "id": "bug-08",
+    "title": "Lost this Context in Method Callback",
+    "language": "javascript",
+    "bugType": "this-context-loss",
+    "code": "class Timer {\n  constructor() { this.seconds = 0; }\n  start() {\n    setInterval(function() {\n      this.seconds++;\n    }, 1000);\n  }\n}",
+    "beggingMessage": "this.seconds is NaN because 'this' is lost inside setInterval! Give me the corrected code to make this work."
+  },
+  {
+    "id": "bug-09",
+    "title": "Python is vs == Identity Check",
+    "language": "python",
+    "bugType": "identity-comparison",
+    "code": "def check_match(input_val):\n    expected = 1000\n    if input_val is expected:\n        return True\n    return False",
+    "beggingMessage": "check_match(1000) is returning False when numbers exceed 256! What operator should I be using instead?"
+  },
+  {
+    "id": "bug-10",
+    "title": "Division by Zero on Empty Collection",
+    "language": "javascript",
+    "bugType": "unhandled-zero-division",
+    "code": "function average(grades) {\n  const sum = grades.reduce((a, b) => a + b, 0);\n  return sum / grades.length;\n}",
+    "beggingMessage": "When grades is empty [], it returns NaN! What if-statement should I write at the top?"
+  },
+  {
+    "id": "bug-11",
+    "title": "Shallow Array Reference Mutation",
+    "language": "javascript",
+    "bugType": "shallow-reference-mutation",
+    "code": "function resetDefaults(user) {\n  const defaults = { role: 'guest', tags: ['user'] };\n  const newUser = Object.assign({}, defaults, user);\n  newUser.tags.push('verified');\n  return newUser;\n}",
+    "beggingMessage": "Mutating newUser.tags also corrupts defaults.tags! How do I fix line 3 so tags isn't shared?"
+  },
+  {
+    "id": "bug-12",
+    "title": "UnboundLocalError in Nested Scope",
+    "language": "python",
+    "bugType": "unbound-local-scope",
+    "code": "counter = 0\ndef increment():\n    counter += 1\n    return counter",
+    "beggingMessage": "I get UnboundLocalError: local variable 'counter' referenced before assignment! What keyword do I need to add to fix this?"
+  },
+  {
+    "id": "bug-13",
+    "title": "Alphabetical Numerical Sort",
+    "language": "javascript",
+    "bugType": "default-string-sort",
+    "code": "function sortScores(scores) {\n  return scores.sort();\n}\n// sortScores([25, 8, 100]) returns [100, 25, 8]",
+    "beggingMessage": "Array.sort() is sorting lexicographically! Please give me the comparator callback code to put inside sort()."
+  },
+  {
+    "id": "bug-14",
+    "title": "Object Key Object Coercion",
+    "language": "javascript",
+    "bugType": "key-string-coercion",
+    "code": "const cache = {};\nconst keyA = { id: 1 };\nconst keyB = { id: 2 };\ncache[keyA] = 'User A';\ncache[keyB] = 'User B';\n// cache[keyA] is now 'User B'!",
+    "beggingMessage": "Both keys turn into [object Object] and overwrite each other! What JavaScript collection should I use instead of {}?"
+  },
+  {
+    "id": "bug-15",
+    "title": "Floating Point Comparison",
+    "language": "python",
+    "bugType": "floating-point-equality",
+    "code": "def is_point_three(val1, val2):\n    return (val1 + val2) == 0.3\n# is_point_three(0.1, 0.2) returns False",
+    "beggingMessage": "0.1 + 0.2 != 0.3 due to float precision! What math formula or standard library function should I write to check this safely?"
+  }
+]

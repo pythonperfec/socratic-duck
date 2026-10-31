@@ -3,6 +3,8 @@
  * Endpoint: https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent
  */
 
+const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
 export async function generate({ system, history = [], image = null }) {
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
@@ -63,29 +65,41 @@ export async function generate({ system, history = [], image = null }) {
     }
   };
 
-  const response = await fetch(url, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(payload)
-  });
+  let retries = 0;
+  while (retries < 3) {
+    retries++;
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    });
 
-  if (!response.ok) {
-    const errText = await response.text();
-    throw new Error(`Gemini API error (${response.status} ${response.statusText}): ${errText}`);
+    if (response.status === 429) {
+      console.warn(`[Gemini API 429 Rate Limit] Backing off 5s before retry ${retries}/3...`);
+      await sleep(5000);
+      continue;
+    }
+
+    if (!response.ok) {
+      const errText = await response.text();
+      throw new Error(`Gemini API error (${response.status} ${response.statusText}): ${errText}`);
+    }
+
+    const data = await response.json();
+    const parts = data.candidates?.[0]?.content?.parts || [];
+
+    // Filter out thinking parts (Gemma 4 provides reasoning trace with thought: true)
+    const answerPart = parts.find(p => !p.thought) || parts[parts.length - 1];
+    const text = answerPart?.text;
+
+    if (!text) {
+      throw new Error('Gemini API returned empty candidate or blocked response: ' + JSON.stringify(data));
+    }
+
+    return text;
   }
 
-  const data = await response.json();
-  const parts = data.candidates?.[0]?.content?.parts || [];
-
-  // Filter out thinking parts (Gemma 4 provides reasoning trace with thought: true)
-  const answerPart = parts.find(p => !p.thought) || parts[parts.length - 1];
-  const text = answerPart?.text;
-
-  if (!text) {
-    throw new Error('Gemini API returned empty candidate or blocked response: ' + JSON.stringify(data));
-  }
-
-  return text;
+  throw new Error('Gemini API exceeded retry limits due to persistent 429 rate limits.');
 }
