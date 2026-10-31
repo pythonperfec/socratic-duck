@@ -4,14 +4,14 @@ import Chat from './components/Chat.jsx';
 import Composer from './components/Composer.jsx';
 import PatienceMeter from './components/PatienceMeter.jsx';
 import BlabStamp, { BlockedBadge } from './components/BlabStamp.jsx';
-import { INITIAL_MESSAGES, getMockDuckResponse } from './mock.js';
+import { INITIAL_MESSAGES } from './mock.js';
 
 export default function App() {
   const [messages, setMessages] = useState(INITIAL_MESSAGES);
   const [mood, setMood] = useState('calm');
   const [patience, setPatience] = useState(70);
   const [lastDelta, setLastDelta] = useState(4);
-  const [blockedCount, setBlockedCount] = useState(1);
+  const [blockedCount, setBlockedCount] = useState(0);
   const [stampTriggered, setStampTriggered] = useState(false);
   const [isDuckTyping, setIsDuckTyping] = useState(false);
 
@@ -28,8 +28,8 @@ export default function App() {
     setStampTriggered(true);
   };
 
-  // Handle user sending a new message (text + optional image)
-  const handleSendMessage = ({ text, image }) => {
+  // Handle user sending a new message (text + optional image) via POST /api/chat
+  const handleSendMessage = async ({ text, image }) => {
     const userMsg = {
       id: `u-${Date.now()}`,
       role: 'user',
@@ -38,35 +38,68 @@ export default function App() {
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     };
 
-    setMessages(prev => [...prev, userMsg]);
+    const updatedMessages = [...messages, userMsg];
+    setMessages(updatedMessages);
     setIsDuckTyping(true);
 
-    // Simulate Socratic deliberation delay
-    setTimeout(() => {
-      const mockResult = getMockDuckResponse(text, patience);
-      const newPatience = Math.max(0, Math.min(100, patience + mockResult.patienceDelta));
-      
-      setPatience(newPatience);
-      setLastDelta(mockResult.patienceDelta);
-      setMood(mockResult.mood);
+    try {
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          history: updatedMessages.map(m => ({
+            role: m.role,
+            text: m.text
+          })),
+          image: image || undefined
+        })
+      });
 
-      if (mockResult.blocked) {
-        setBlockedCount(prev => prev + 1);
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || `Server responded with ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      const newMood = data.mood || 'calm';
+      const delta = typeof data.patience_delta === 'number' ? data.patience_delta : 0;
+
+      setMood(newMood);
+      setLastDelta(delta);
+      setPatience(prev => Math.max(0, Math.min(100, prev + delta)));
+
+      if (data.blocked > 0) {
+        setBlockedCount(prev => prev + data.blocked);
         setStampTriggered(true);
       }
 
       const duckMsg = {
         id: `d-${Date.now()}`,
         role: 'duck',
-        mood: mockResult.mood,
-        patienceDelta: mockResult.patienceDelta,
-        text: mockResult.message,
+        mood: newMood,
+        patienceDelta: delta,
+        text: data.message,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       };
 
       setMessages(prev => [...prev, duckMsg]);
+    } catch (err) {
+      console.error('Chat error:', err);
+      const duckMsg = {
+        id: `d-${Date.now()}`,
+        role: 'duck',
+        mood: 'grumpy',
+        patienceDelta: -2,
+        text: `Quack! Trouble communicating with server: ${err.message}`,
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      };
+      setMessages(prev => [...prev, duckMsg]);
+    } finally {
       setIsDuckTyping(false);
-    }, 750);
+    }
   };
 
   return (
