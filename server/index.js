@@ -74,7 +74,7 @@ export function parseDuckReply(rawText) {
 }
 
 // Health check endpoint
-app.get('/api/health', (req, res) => {
+app.get(['/api/health', '/health'], (req, res) => {
   res.json({
     status: 'ok',
     guard: (process.env.GUARD || 'on').toLowerCase(),
@@ -88,7 +88,7 @@ app.get('/api/health', (req, res) => {
  * Request: { history: [{ role: 'user' | 'duck', text }], image?: string, hintLevel?: number, spirit?: string }
  * Response: { message, mood, patience_delta, blocked: number, attempts: number }
  */
-app.post('/api/chat', async (req, res) => {
+app.post(['/api/chat', '/chat'], async (req, res) => {
   try {
     const { history = [], image = null, hintLevel = 1, spirit = null } = req.body;
     const backend = (process.env.BACKEND || 'gemini').toLowerCase();
@@ -135,7 +135,8 @@ app.post('/api/chat', async (req, res) => {
  * Request: { history: [{ role: 'user' | 'duck', text }], spirit?: string, mode?: string }
  * Response: { root_cause, lesson, flashcard: { q, a }, farewell?: string }
  */
-app.post('/api/report', async (req, res) => {
+app.post(['/api/report', '/report'], async (req, res) => {
+
   try {
     const { history = [], spirit = null, mode = 'duck' } = req.body;
     const backend = (process.env.BACKEND || 'gemini').toLowerCase();
