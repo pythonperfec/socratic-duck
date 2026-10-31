@@ -34,6 +34,7 @@
   --shadow-tub: 0 12px 28px rgba(31, 45, 45, 0.16);
   --shadow-bubble: 0 4px 12px rgba(46, 156, 154, 0.12);
   --shadow-stamp: 0 8px 30px rgba(214, 48, 49, 0.35);
+  --shadow-modal: 0 16px 40px rgba(31, 45, 45, 0.28);
 }
 
 * {
@@ -112,7 +113,41 @@ code, pre {
 .header-actions {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
+}
+
+/* Solved it! Button */
+.solved-it-btn {
+  background: linear-gradient(135deg, var(--color-duck-yellow) 0%, #FFB300 100%);
+  color: var(--color-ink);
+  border: 2px solid #C49000;
+  border-radius: var(--radius-sm);
+  padding: 8px 16px;
+  font-family: var(--font-heading);
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 3px 0 #9E7400;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.solved-it-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 0 #9E7400;
+  background: linear-gradient(135deg, #FFE066 0%, #FFC107 100%);
+}
+
+.solved-it-btn:active:not(:disabled) {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 #9E7400;
+}
+
+.solved-it-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 /* Blocked Badge */
@@ -145,19 +180,19 @@ code, pre {
   font-size: 0.85rem;
 }
 
-.dev-stamp-btn {
+.dev-stamp-btn, .dev-drain-btn {
   background-color: var(--color-soap-pink);
   border: 2px solid var(--color-soap-pink-dark);
   color: var(--color-ink);
-  padding: 8px 14px;
+  padding: 8px 12px;
   border-radius: var(--radius-sm);
   font-family: var(--font-heading);
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   cursor: pointer;
   transition: all 0.15s ease;
 }
 
-.dev-stamp-btn:hover {
+.dev-stamp-btn:hover, .dev-drain-btn:hover {
   background-color: var(--color-soap-pink-dark);
   transform: translateY(-1px);
 }
@@ -205,6 +240,23 @@ code, pre {
   background-position: -2px -2px;
   position: relative;
   padding: 16px;
+}
+
+/* Hint Ladder Tag on Wall */
+.hint-ladder-tag {
+  position: absolute;
+  top: 14px;
+  left: 100px;
+  background: var(--color-porcelain-white);
+  border: 2px solid var(--color-tile-teal-dark);
+  border-radius: var(--radius-sm);
+  padding: 4px 10px;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--color-tile-teal-dark);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  letter-spacing: 0.05em;
 }
 
 /* Towel Rail on wall */
@@ -369,6 +421,100 @@ code, pre {
   height: 130px;
   background: linear-gradient(180deg, #167D7B 0%, #105958 100%);
   overflow: hidden;
+  transition: all 0.6s ease;
+}
+
+/* Drain Whirlpool / Vortex Animation */
+.drain-whirlpool {
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 70px;
+  height: 24px;
+  z-index: 8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.whirlpool-ring {
+  position: absolute;
+  border: 2px dashed rgba(255, 255, 255, 0.85);
+  border-radius: 50%;
+  animation: whirlpoolSpin 1s linear infinite;
+}
+
+.whirlpool-ring.r1 {
+  width: 60px;
+  height: 20px;
+}
+
+.whirlpool-ring.r2 {
+  width: 36px;
+  height: 12px;
+  border-color: rgba(245, 196, 0, 0.7);
+  animation-duration: 0.6s;
+  animation-direction: reverse;
+}
+
+.drain-stopper {
+  width: 16px;
+  height: 8px;
+  background: #A4B0BE;
+  border: 2px solid #57606F;
+  border-radius: 50%;
+}
+
+@keyframes whirlpoolSpin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.water-draining {
+  animation: drainDip 2.8s ease-in-out;
+}
+
+@keyframes drainDip {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(18px) scale(0.96); }
+  100% { transform: translateY(0); }
+}
+
+.duck-draining-swirl {
+  animation: duckDrainSwirl 2.8s ease-in-out !important;
+}
+
+@keyframes duckDrainSwirl {
+  0% { transform: translateX(-50%) rotate(0deg); }
+  30% { transform: translateX(-50%) rotate(-8deg) scale(0.9); }
+  60% { transform: translateX(-50%) rotate(8deg) scale(0.85); }
+  100% { transform: translateX(-50%) rotate(0deg) scale(1); }
+}
+
+.duck-sigh-bubble {
+  position: absolute;
+  top: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(255, 255, 255, 0.95);
+  border: 2px solid var(--color-ink);
+  border-radius: var(--radius-sm);
+  padding: 3px 8px;
+  font-family: var(--font-heading);
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--color-stamp-red);
+  white-space: nowrap;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  animation: sighFloat 2.8s forwards ease-out;
+}
+
+@keyframes sighFloat {
+  0% { opacity: 0; transform: translateX(-50%) translateY(10px) scale(0.8); }
+  20% { opacity: 1; transform: translateX(-50%) translateY(0) scale(1.05); }
+  80% { opacity: 1; transform: translateX(-50%) translateY(-6px) scale(1); }
+  100% { opacity: 0; transform: translateX(-50%) translateY(-14px); }
 }
 
 /* Water surface & ripples */
@@ -440,18 +586,10 @@ code, pre {
 }
 
 @keyframes duckBob {
-  0% {
-    transform: translateY(0px) rotate(0deg);
-  }
-  35% {
-    transform: translateY(-6px) rotate(-1.5deg);
-  }
-  70% {
-    transform: translateY(3px) rotate(1.5deg);
-  }
-  100% {
-    transform: translateY(0px) rotate(0deg);
-  }
+  0% { transform: translateY(0px) rotate(0deg); }
+  35% { transform: translateY(-6px) rotate(-1.5deg); }
+  70% { transform: translateY(3px) rotate(1.5deg); }
+  100% { transform: translateY(0px) rotate(0deg); }
 }
 
 .duck-svg {
@@ -469,13 +607,8 @@ code, pre {
   z-index: 7;
 }
 
-.left-foam {
-  left: 20px;
-}
-
-.right-foam {
-  right: 20px;
-}
+.left-foam { left: 20px; }
+.right-foam { right: 20px; }
 
 .sud {
   background: radial-gradient(circle at 35% 35%, #FFFFFF 0%, #FBF4E4 70%, #F2B6B0 100%);
@@ -608,15 +741,8 @@ code, pre {
   z-index: 10;
 }
 
-.delta-badge.positive {
-  background-color: #2ECC71;
-  color: white;
-}
-
-.delta-badge.negative {
-  background-color: var(--color-stamp-red);
-  color: white;
-}
+.delta-badge.positive { background-color: #2ECC71; color: white; }
+.delta-badge.negative { background-color: var(--color-stamp-red); color: white; }
 
 @keyframes deltaPop {
   0% { transform: translateY(6px) scale(0.7); opacity: 0; }
@@ -655,7 +781,7 @@ code, pre {
 }
 
 .gauge-liquid {
-  height: 100% !important; /* using horizontal progress bar for wide readability */
+  height: 100% !important;
   background: linear-gradient(90deg, #F5C400 0%, #FFD700 80%, #FFA502 100%);
   border-radius: 10px;
   position: absolute;
@@ -720,9 +846,7 @@ code, pre {
   transition: all 0.15s ease;
 }
 
-.mood-pill:hover {
-  background-color: #DDE7E4;
-}
+.mood-pill:hover { background-color: #DDE7E4; }
 
 .mood-pill.active {
   background-color: var(--color-duck-yellow);
@@ -750,8 +874,7 @@ code, pre {
   overflow-y: auto;
   padding: 20px 24px;
   background-color: #FAFDFC;
-  background-image: 
-    radial-gradient(circle, #E1ECE9 1px, transparent 1px);
+  background-image: radial-gradient(circle, #E1ECE9 1px, transparent 1px);
   background-size: 20px 20px;
 }
 
@@ -770,24 +893,12 @@ code, pre {
   animation: bubbleFloatIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
 }
 
-.message-row.duck-row {
-  align-self: flex-start;
-}
-
-.message-row.user-row {
-  align-self: flex-end;
-  justify-content: flex-end;
-}
+.message-row.duck-row { align-self: flex-start; }
+.message-row.user-row { align-self: flex-end; justify-content: flex-end; }
 
 @keyframes bubbleFloatIn {
-  0% {
-    opacity: 0;
-    transform: translateY(14px) scale(0.92);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
+  0% { opacity: 0; transform: translateY(14px) scale(0.92); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 /* Duck Avatar next to bubble */
@@ -818,11 +929,8 @@ code, pre {
   transition: transform 0.15s ease;
 }
 
-.soap-bubble:hover {
-  transform: translateY(-1px);
-}
+.soap-bubble:hover { transform: translateY(-1px); }
 
-/* Duck Soap Bubble (Pearlescent translucent bath bubble look) */
 .duck-bubble {
   background: radial-gradient(circle at 20% 20%, #FFFFFF 0%, #F0F9F8 60%, #E2F2F0 100%);
   border: 2px solid var(--color-tile-teal);
@@ -830,7 +938,6 @@ code, pre {
   color: var(--color-ink);
 }
 
-/* Iridescent Sheen on Bubble */
 .bubble-sheen {
   position: absolute;
   top: 4px;
@@ -843,7 +950,6 @@ code, pre {
   pointer-events: none;
 }
 
-/* User Soap Bubble (Warm towel cream) */
 .user-bubble {
   background-color: var(--color-towel-cream);
   border: 2px solid #E2D9C3;
@@ -851,7 +957,6 @@ code, pre {
   color: var(--color-ink);
 }
 
-/* Attachment Screenshot */
 .bubble-attachment {
   margin-bottom: 10px;
   border-radius: var(--radius-sm);
@@ -867,9 +972,7 @@ code, pre {
   display: block;
 }
 
-.bubble-text {
-  margin-bottom: 4px;
-}
+.bubble-text { margin-bottom: 4px; }
 
 .bubble-footer {
   display: flex;
@@ -913,10 +1016,7 @@ code, pre {
   padding: 10px 16px;
 }
 
-.typing-suds {
-  display: flex;
-  gap: 5px;
-}
+.typing-suds { display: flex; gap: 5px; }
 
 .typing-dot {
   width: 9px;
@@ -950,10 +1050,7 @@ code, pre {
   padding: 14px 18px;
 }
 
-/* Thumbnail preview bar */
-.thumbnail-preview-bar {
-  margin-bottom: 10px;
-}
+.thumbnail-preview-bar { margin-bottom: 10px; }
 
 .thumbnail-card {
   display: inline-flex;
@@ -1080,9 +1177,7 @@ code, pre {
   color: var(--color-ink);
 }
 
-.send-duck-icon {
-  font-size: 1.1rem;
-}
+.send-duck-icon { font-size: 1.1rem; }
 
 /* ========================================================
    RUBBER STAMP ("DUCK ALMOST BLABBED")
@@ -1109,23 +1204,11 @@ code, pre {
   animation: stampSlam 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
 }
 
-/* Thud-like Slam Down Animation */
 @keyframes stampSlam {
-  0% {
-    transform: scale(3.5) rotate(-20deg);
-    opacity: 0;
-  }
-  65% {
-    transform: scale(0.92) rotate(-8deg);
-    opacity: 1;
-  }
-  85% {
-    transform: scale(1.04) rotate(-10deg);
-  }
-  100% {
-    transform: scale(1) rotate(-9deg);
-    opacity: 1;
-  }
+  0% { transform: scale(3.5) rotate(-20deg); opacity: 0; }
+  65% { transform: scale(0.92) rotate(-8deg); opacity: 1; }
+  85% { transform: scale(1.04) rotate(-10deg); }
+  100% { transform: scale(1) rotate(-9deg); opacity: 1; }
 }
 
 .stamp-body {
@@ -1178,6 +1261,299 @@ code, pre {
 }
 
 /* ========================================================
+   POST-MORTEM CASE REPORT MODAL
+   ======================================================== */
+.case-report-backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(31, 45, 45, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.case-report-modal {
+  background-color: var(--color-porcelain-white);
+  border: 4px solid var(--color-tile-teal);
+  border-radius: var(--radius-lg);
+  max-width: 720px;
+  width: 100%;
+  box-shadow: var(--shadow-modal);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.case-header {
+  background-color: var(--color-towel-cream);
+  border-bottom: 3px solid var(--color-grout);
+  padding: 20px 24px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  position: relative;
+}
+
+.case-duck-badge {
+  position: relative;
+  width: 80px;
+  height: 70px;
+  flex-shrink: 0;
+}
+
+.duck-sparkle {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  font-size: 1.5rem;
+}
+
+.case-title-group {
+  flex: 1;
+}
+
+.case-stamp {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #27AE60;
+  border: 1.5px solid #27AE60;
+  display: inline-block;
+  padding: 2px 6px;
+  border-radius: 4px;
+  letter-spacing: 0.08em;
+  margin-bottom: 4px;
+}
+
+.case-heading {
+  font-size: 1.6rem;
+  color: var(--color-ink);
+  line-height: 1.1;
+}
+
+.case-date {
+  font-size: 0.82rem;
+  color: var(--color-ink-muted);
+  font-family: var(--font-mono);
+  margin-top: 2px;
+}
+
+.case-close-btn {
+  background: var(--color-grout);
+  border: 2px solid #C4D6D3;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  font-size: 1rem;
+  color: var(--color-ink);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+}
+
+.case-close-btn:hover {
+  background: var(--color-stamp-red);
+  color: white;
+  border-color: var(--color-stamp-red-dark);
+}
+
+.case-body {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  background-color: #FAFDFC;
+}
+
+.case-section {
+  border-radius: var(--radius-md);
+  padding: 16px 20px;
+}
+
+.root-cause-card {
+  background-color: #FDF4E7;
+  border: 2px solid #E5C390;
+}
+
+.lesson-card {
+  background-color: #EBF7F5;
+  border: 2px solid var(--color-tile-teal-light);
+}
+
+.flashcard-section {
+  background-color: var(--color-porcelain-white);
+  border: 2px solid #CAD6D4;
+}
+
+.section-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.section-label h3 {
+  font-size: 0.92rem;
+  letter-spacing: 0.04em;
+  color: var(--color-ink);
+}
+
+.section-text {
+  font-size: 1rem;
+  line-height: 1.5;
+  color: var(--color-ink);
+}
+
+/* Flashcard Component */
+.flashcard-card {
+  background-color: var(--color-towel-cream);
+  border: 2px solid #DFD5BD;
+  border-radius: var(--radius-sm);
+  padding: 14px 18px;
+  margin-top: 6px;
+}
+
+.flashcard-tag {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--color-tile-teal-dark);
+  display: block;
+  margin-bottom: 4px;
+}
+
+.flashcard-tag.success {
+  color: #27AE60;
+}
+
+.flashcard-q p, .flashcard-a p {
+  font-size: 0.98rem;
+  line-height: 1.45;
+  color: var(--color-ink);
+}
+
+.flashcard-a {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1.5px dashed #C8BEA5;
+}
+
+.reveal-answer-btn {
+  margin-top: 10px;
+  background-color: var(--color-duck-yellow);
+  border: 2px solid #C49000;
+  border-radius: var(--radius-sm);
+  padding: 6px 14px;
+  font-family: var(--font-heading);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-ink);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.reveal-answer-btn:hover {
+  background-color: #FFE066;
+  transform: translateY(-1px);
+}
+
+.case-footer {
+  background-color: var(--color-porcelain-white);
+  border-top: 2px solid var(--color-grout);
+  padding: 14px 24px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.print-btn {
+  background-color: var(--color-tile-teal);
+  color: white;
+  border: 2px solid var(--color-tile-teal-dark);
+  border-radius: var(--radius-sm);
+  padding: 8px 16px;
+  font-family: var(--font-heading);
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.print-btn:hover {
+  background-color: var(--color-tile-teal-dark);
+}
+
+.done-btn {
+  background-color: var(--color-grout);
+  border: 2px solid #BAC9C6;
+  color: var(--color-ink);
+  border-radius: var(--radius-sm);
+  padding: 8px 16px;
+  font-family: var(--font-heading);
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+
+.done-btn:hover {
+  background-color: #DDE7E4;
+}
+
+/* ========================================================
+   PRINT STYLESHEET
+   ======================================================== */
+@media print {
+  body {
+    background-color: #FFFFFF !important;
+    color: #000000 !important;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  .case-report-backdrop {
+    position: static !important;
+    background: transparent !important;
+    padding: 0 !important;
+  }
+
+  .case-report-modal {
+    border: 2px solid #333333 !important;
+    box-shadow: none !important;
+    max-width: 100% !important;
+    width: 100% !important;
+  }
+
+  .case-header {
+    background-color: #F8F9FA !important;
+    border-bottom: 2px solid #333333 !important;
+  }
+
+  .case-section {
+    page-break-inside: avoid;
+  }
+
+  .root-cause-card {
+    border: 1px solid #777777 !important;
+    background-color: #FFFFFF !important;
+  }
+
+  .lesson-card {
+    border: 1px solid #777777 !important;
+    background-color: #FFFFFF !important;
+  }
+
+  .flashcard-section {
+    border: 1px solid #777777 !important;
+  }
+}
+
+/* ========================================================
    RESPONSIVE LAYOUTS
    ======================================================== */
 @media (max-width: 980px) {
@@ -1209,6 +1585,7 @@ code, pre {
   .header-actions {
     width: 100%;
     justify-content: space-between;
+    flex-wrap: wrap;
   }
 
   .tub-scene {

@@ -8,6 +8,7 @@ import { DUCK_SYSTEM_PROMPT } from './prompts.js';
 import { generate as generateGemini } from './adapters/gemini.js';
 import { generate as generateOllama } from './adapters/ollama.js';
 import { guardedReply } from './guard.js';
+import { generateReport } from './report.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -36,7 +37,6 @@ export function parseDuckReply(rawText) {
   }
 
   let cleaned = rawText.trim();
-  // Strip code fences
   cleaned = cleaned.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '').trim();
 
   try {
@@ -50,7 +50,6 @@ export function parseDuckReply(rawText) {
       return { message, mood, patience_delta };
     }
   } catch (e) {
-    // Attempt to extract curly-brace object
     const match = cleaned.match(/\{[\s\S]*\}/);
     if (match) {
       try {
@@ -63,9 +62,7 @@ export function parseDuckReply(rawText) {
             : 0;
           return { message, mood, patience_delta };
         }
-      } catch (inner) {
-        // Fall through
-      }
+      } catch (inner) {}
     }
   }
 
@@ -88,19 +85,20 @@ app.get('/api/health', (req, res) => {
 
 /**
  * POST /api/chat
- * Request: { history: [{ role: 'user' | 'duck', text }], image?: string }
+ * Request: { history: [{ role: 'user' | 'duck', text }], image?: string, hintLevel?: number }
  * Response: { message, mood, patience_delta, blocked: number, attempts: number }
  */
 app.post('/api/chat', async (req, res) => {
   try {
-    const { history = [], image = null } = req.body;
+    const { history = [], image = null, hintLevel = 1 } = req.body;
     const backend = (process.env.BACKEND || 'gemini').toLowerCase();
-
     const generateFn = backend === 'ollama' ? generateOllama : generateGemini;
+
+    const systemPromptWithLevel = `${DUCK_SYSTEM_PROMPT}\n\n[HINT LADDER LEVEL: ${hintLevel}/4. If the user is struggling, calibrate your leading question to Level ${hintLevel}. Still never provide the corrected code!]`;
 
     const { reply, blocked, attempts } = await guardedReply({
       generateFn,
-      system: DUCK_SYSTEM_PROMPT,
+      system: systemPromptWithLevel,
       history,
       image,
       parseReplyFn: parseDuckReply
@@ -123,6 +121,33 @@ app.post('/api/chat', async (req, res) => {
         patience_delta: 0,
         blocked: 0,
         attempts: 1
+      }
+    });
+  }
+});
+
+/**
+ * POST /api/report
+ * Request: { history: [{ role: 'user' | 'duck', text }] }
+ * Response: { root_cause, lesson, flashcard: { q, a } }
+ */
+app.post('/api/report', async (req, res) => {
+  try {
+    const { history = [] } = req.body;
+    const backend = (process.env.BACKEND || 'gemini').toLowerCase();
+    const generateFn = backend === 'ollama' ? generateOllama : generateGemini;
+
+    const report = await generateReport({ history, generateFn });
+    res.json(report);
+  } catch (error) {
+    console.error('[/api/report error]:', error.message);
+    res.status(500).json({
+      error: error.message,
+      root_cause: "A logic error occurred in the execution lifecycle.",
+      lesson: "Trace state mutations and boundary constraints methodically.",
+      flashcard: {
+        q: "What debugging discipline was reinforced today?",
+        a: "Verifying runtime variable state instead of guessing static assumptions."
       }
     });
   }

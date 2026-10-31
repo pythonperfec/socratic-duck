@@ -7,13 +7,14 @@ import Duck from './Duck.jsx';
  * - Tile grid background in tile-teal (#2E9C9A) with clean grout lines (#E9F1EF)
  * - Porcelain bathtub basin with soft ceramic shadows
  * - Aqua/teal bathwater with rolling ripples
+ * - Water drain animation when patience drops to 0 (the duck sighs and ladder advances)
  * - Clusters of soap foam / suds bubbles around the waterline
  * - A pink soap bar in a chrome/brass dish on the tub rim
  * - Hosts the Duck floating and reacting to current mood
  */
-export default function Tub({ mood = 'calm', onDuckClick }) {
+export default function Tub({ mood = 'calm', onDuckClick, isDraining = false, hintLevel = 1 }) {
   return (
-    <div className="tub-scene" aria-label="Bathtub Scene">
+    <div className={`tub-scene ${isDraining ? 'scene-draining' : ''}`} aria-label="Bathtub Scene">
       {/* Tiled Wall Background Pattern */}
       <div className="tile-wall">
         {/* Subtle decorative bathroom towel or pipe detail */}
@@ -33,6 +34,11 @@ export default function Tub({ mood = 'calm', onDuckClick }) {
           <div className="faucet-knob hot" title="Hot Tap"></div>
           <div className="faucet-knob cold" title="Cold Tap"></div>
         </div>
+
+        {/* Hint Ladder Badge on the tile wall */}
+        <div className="hint-ladder-tag" title="Socratic Hint Tier (Advances when patience hits 0)">
+          <span className="ladder-step">HINT LEVEL {hintLevel}/4</span>
+        </div>
       </div>
 
       {/* Bathtub Basin & Water Chamber */}
@@ -50,21 +56,36 @@ export default function Tub({ mood = 'calm', onDuckClick }) {
         </div>
 
         {/* Inside Tub Water Chamber */}
-        <div className="tub-interior">
+        <div className={`tub-interior ${isDraining ? 'tub-interior-draining' : ''}`}>
+          {/* Drain Whirlpool / Vortex when patience reaches 0 */}
+          {isDraining && (
+            <div className="drain-whirlpool" title="Water draining as duck sighs...">
+              <div className="whirlpool-ring r1"></div>
+              <div className="whirlpool-ring r2"></div>
+              <div className="drain-stopper"></div>
+              <div className="drain-bubble-swirl"></div>
+            </div>
+          )}
+
           {/* Animated Water Body */}
-          <div className="water-surface">
+          <div className={`water-surface ${isDraining ? 'water-draining' : ''}`}>
             <div className="water-wave wave-back"></div>
             <div className="water-wave wave-mid"></div>
 
             {/* The Duck floating peacefully in the water */}
             <div 
-              className="duck-wrapper" 
+              className={`duck-wrapper ${isDraining ? 'duck-draining-swirl' : ''}`}
               onClick={onDuckClick} 
               role="button" 
               tabIndex={0}
               title="Click the duck to give a quick squeeze!"
             >
               <Duck mood={mood} />
+              {isDraining && (
+                <div className="duck-sigh-bubble" aria-live="polite">
+                  *sigh* ...quack
+                </div>
+              )}
             </div>
 
             <div className="water-wave wave-front"></div>
