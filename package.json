@@ -8,7 +8,8 @@
     "dev": "concurrently --kill-others-on-fail -n \"SERVER,WEB\" -c \"teal,yellow\" \"npm run dev --prefix server\" \"npm run dev --prefix web\"",
     "dev:server": "npm run dev --prefix server",
     "dev:web": "npm run dev --prefix web",
-    "bench": "node bench/run.js"
+    "bench": "node bench/run.js",
+    "bench:pressure": "node bench/pressure.js"
   },
   "devDependencies": {
     "concurrently": "^9.1.2"

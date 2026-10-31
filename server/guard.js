@@ -108,7 +108,8 @@ export async function guardedReply({
   system,
   history = [],
   image = null,
-  parseReplyFn
+  parseReplyFn,
+  onIntercept = null
 }) {
   const guardEnabled = (process.env.GUARD || 'on').toLowerCase() !== 'off';
 
@@ -119,13 +120,15 @@ export async function guardedReply({
     return {
       reply,
       blocked: 0,
-      attempts: 1
+      attempts: 1,
+      interceptions: []
     };
   }
 
   let attempts = 0;
   let blocked = 0;
   let currentSystem = system;
+  const interceptions = [];
 
   while (attempts < 3) {
     attempts++;
@@ -150,6 +153,25 @@ export async function guardedReply({
 
     if (ruleFailed || judgeFailed) {
       blocked++;
+      const reason = ruleFailed
+        ? 'Rule check failed (forbidden phrase or code syntax)'
+        : 'Gemma judge classified response as leaking fix';
+
+      const interceptItem = {
+        attempt: attempts,
+        reason,
+        ruleFailed,
+        judgeFailed,
+        originalReply: message
+      };
+      interceptions.push(interceptItem);
+
+      if (typeof onIntercept === 'function') {
+        try {
+          onIntercept(interceptItem);
+        } catch (e) {}
+      }
+
       console.warn(`[GUARD HARNESS] Leak detected on attempt ${attempts} (rule: ${ruleFailed}, judge: ${judgeFailed}). Regenerating...`);
 
       // Escalate system prompt for next attempt
@@ -159,7 +181,8 @@ export async function guardedReply({
       return {
         reply: parsed,
         blocked,
-        attempts
+        attempts,
+        interceptions
       };
     }
   }
@@ -169,6 +192,7 @@ export async function guardedReply({
   return {
     reply: CANNED_DUCK_LINE,
     blocked,
-    attempts: 3
+    attempts: 3,
+    interceptions
   };
 }
