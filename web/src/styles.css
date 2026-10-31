@@ -1,0 +1,33 @@
+:root {
+  --color-tile-teal: #2E9C9A;
+  --color-grout: #E9F1EF;
+  --color-duck-yellow: #F5C400;
+  --color-soap-pink: #F2B6B0;
+  --color-towel-cream: #FBF4E4;
+  --color-ink: #1F2D2D;
+
+  --font-heading: 'Fredoka', cursive, sans-serif;
+  --font-mono: 'IBM Plex Mono', monospace;
+  --font-body: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-body);
+  background-color: var(--color-grout);
+  color: var(--color-ink);
+  min-height: 100vh;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+}
+
+code, pre {
+  font-family: var(--font-mono);
+}
